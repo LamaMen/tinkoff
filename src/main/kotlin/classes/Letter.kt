@@ -1,6 +1,6 @@
 package classes
 
-class Letter(override val sender: String, override val addressee: String, override val body: String) : Message() {
+class Letter(override val sender: String, override val receiver: String, override val body: String) : Message() {
     override val type: String = "letter"
     private var isSealed = true
 

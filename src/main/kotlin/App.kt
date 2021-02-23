@@ -11,8 +11,8 @@ fun List<Message>.print() {
 
 fun main() {
     val email = EmailMessage("Ilia", "Danny", "Hello!")
-    val emailAnswerString = email.answer("Hi, dear friend. How many years have we not seen?!")
-    val emailAnswerInt = emailAnswerString.answer(5)
+    val emailAnswerString = email.reply("Hi, dear friend. How many years have we not seen?!")
+    val emailAnswerInt = emailAnswerString.reply(5)
     val letter = Letter("Alex", "Kate", "I love you!")
     val socialMedia = SocialMediaMessage("Kate", "Alex", "Do you still write letters ???")
 
