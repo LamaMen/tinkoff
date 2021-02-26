@@ -7,11 +7,23 @@ fun <T> Array<out T>.asQueue(): Queue<T> {
 }
 
 class MyQueue<T> : Queue<T> {
-    private val queue = mutableListOf<T>()
+    private val _queue = mutableListOf<T>()
 
-    override fun enqueue(element: T) {
-        queue.add(element)
+    inner class QueueIterator : Iterator<T> {
+        private var cursor: Int = 0
+
+        override fun hasNext(): Boolean = cursor < _queue.size
+
+        override fun next(): T = _queue[cursor++]
     }
 
-    override fun dequeue(): T = queue.removeFirst()
+    override fun enqueue(element: T) {
+        _queue.add(element)
+    }
+
+    override fun dequeue(): T = _queue.removeFirst()
+
+    override fun peek(): T = _queue.first()
+
+    override fun iterator(): Iterator<T> = QueueIterator()
 }
