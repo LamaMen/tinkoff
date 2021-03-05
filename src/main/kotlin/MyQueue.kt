@@ -1,6 +1,7 @@
 import java.util.*
 
 fun <T> queueOf(vararg elements: T): Queue<T> = elements.asQueue()
+fun <T> queueOf(): Queue<T> = MyQueue()
 
 fun <T> Array<out T>.asQueue(): Queue<T> {
     val queue = MyQueue<T>()
@@ -23,7 +24,7 @@ class MyQueue<T> : Queue<T> {
         _queue.add(element)
     }
 
-    override fun dequeue(): T = _queue.removeFirst()
-    override fun peek(): T = _queue.first()
+    override fun dequeue(): T? = if (_queue.isEmpty()) null else _queue.removeFirst()
+    override fun peek(): T? = if (_queue.isEmpty()) null else _queue.first()
     override fun iterator(): Iterator<T> = QueueIterator()
 }
