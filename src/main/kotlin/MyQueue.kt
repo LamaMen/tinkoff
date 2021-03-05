@@ -1,3 +1,5 @@
+import java.util.*
+
 fun <T> queueOf(vararg elements: T): Queue<T> = elements.asQueue()
 
 fun <T> Array<out T>.asQueue(): Queue<T> {
@@ -7,7 +9,7 @@ fun <T> Array<out T>.asQueue(): Queue<T> {
 }
 
 class MyQueue<T> : Queue<T> {
-    private val _queue = mutableListOf<T>()
+    private val _queue: MutableList<T> = LinkedList<T>()
 
     inner class QueueIterator : Iterator<T> {
         private var cursor: Int = 0
@@ -22,8 +24,6 @@ class MyQueue<T> : Queue<T> {
     }
 
     override fun dequeue(): T = _queue.removeFirst()
-
     override fun peek(): T = _queue.first()
-
     override fun iterator(): Iterator<T> = QueueIterator()
 }
