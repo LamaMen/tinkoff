@@ -5,7 +5,7 @@ fun <T> queueOf(): Queue<T> = MyQueue()
 
 fun <T> Array<out T>.asQueue(): Queue<T> {
     val queue = MyQueue<T>()
-    forEach { queue.enqueue(it) }
+    forEach(queue::enqueue)
     return queue
 }
 
@@ -25,6 +25,8 @@ class MyQueue<T> : Queue<T> {
     }
 
     override fun dequeue(): T? = if (_queue.isEmpty()) null else _queue.removeFirst()
+
     override fun peek(): T? = if (_queue.isEmpty()) null else _queue.first()
+
     override fun iterator(): Iterator<T> = QueueIterator()
 }

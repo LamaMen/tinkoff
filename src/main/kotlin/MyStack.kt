@@ -1,8 +1,9 @@
 fun <T> stackOf(vararg elements: T): Stack<T> = elements.asStack()
+fun <T> stackOf(): Stack<T> = MyStack()
 
 fun <T> Array<out T>.asStack(): Stack<T> {
     val stack = MyStack<T>()
-    forEach { stack.push(it) }
+    forEach(stack::push)
     return stack
 }
 
@@ -22,9 +23,9 @@ class MyStack<T> : Stack<T> {
         _stack.add(element)
     }
 
-    override fun pop(): T = _stack.removeLast()
+    override fun pop(): T? = if (_stack.isEmpty()) null else _stack.removeLast()
 
-    override fun peek(): T = _stack.last()
+    override fun peek(): T? = if (_stack.isEmpty()) null else _stack.last()
 
     override fun iterator(): Iterator<T> = StackIterator()
 }
