@@ -14,18 +14,14 @@ object GroupService {
 
     private val groupsWithStudents = GroupDAO.getGroups()
             .map { group ->
-                GroupWithStudents(
-                        group.number,
-                        group.specialty,
-                        group.faculty,
-                        StudentsDAO.getStudentsByGroupNumber(group.number)
-                )
+                GroupWithStudents(group)
             }
 
-    fun getGroupWithStudents() = groupsWithStudents
-    fun getSortedGroupsByNumber(): List<GroupWithStudents> = groupsWithStudents.sortedBy { it.number }
+    fun getGroupWithStudents(): List<GroupWithStudents> = groupsWithStudents
+
+    fun getSortedGroupsByNumber(): List<GroupWithStudents> = groupsWithStudents.sortedBy(GroupWithStudents::number)
+
     fun filterGroupByFaculty(faculty: String): List<GroupWithStudents> = groupsWithStudents.filter { it.faculty == faculty }
-    fun countBy(predicate: (GroupWithStudents) -> Boolean) = groupsWithStudents.count(predicate)
 
-
+    fun countBy(predicate: (GroupWithStudents) -> Boolean): Int = groupsWithStudents.count(predicate)
 }
