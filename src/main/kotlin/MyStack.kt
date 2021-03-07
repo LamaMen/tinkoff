@@ -1,3 +1,5 @@
+import java.util.*
+
 fun <T> stackOf(vararg elements: T): Stack<T> = elements.asStack()
 fun <T> stackOf(): Stack<T> = MyStack()
 
@@ -9,7 +11,7 @@ fun <T> Array<out T>.asStack(): Stack<T> {
 
 class MyStack<T> : Stack<T> {
 
-    private val _stack = mutableListOf<T>()
+    private val _stack = LinkedList<T>()
 
     inner class StackIterator : Iterator<T> {
         private var cursor = _stack.lastIndex
