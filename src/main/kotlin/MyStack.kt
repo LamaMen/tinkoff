@@ -1,5 +1,3 @@
-import java.util.*
-
 fun <T> stackOf(vararg elements: T): Stack<T> = elements.asStack()
 fun <T> stackOf(): Stack<T> = MyStack()
 
@@ -10,24 +8,15 @@ fun <T> Array<out T>.asStack(): Stack<T> {
 }
 
 class MyStack<T> : Stack<T> {
-
-    private val _stack = LinkedList<T>()
-
-    inner class StackIterator : Iterator<T> {
-        private var cursor = _stack.lastIndex
-
-        override fun hasNext(): Boolean = cursor >= 0
-
-        override fun next(): T = _stack[cursor--]
-    }
+    private val _stack = SingleLinkedList<T>()
 
     override fun push(element: T) {
-        _stack.add(element)
+        _stack.addFirst(element)
     }
 
-    override fun pop(): T? = if (_stack.isEmpty()) null else _stack.removeLast()
+    override fun pop(): T? = _stack.removeFirst()
 
-    override fun peek(): T? = if (_stack.isEmpty()) null else _stack.last()
+    override fun peek(): T? = _stack.first()
 
-    override fun iterator(): Iterator<T> = StackIterator()
+    override fun iterator(): Iterator<T> = _stack.iterator()
 }
