@@ -1,4 +1,5 @@
 import services.DatabaseConnectionService
+import services.TableInitializationService
 
 /**
 Задание:
@@ -53,5 +54,11 @@ import services.DatabaseConnectionService
  */
 
 fun main() {
+    DatabaseConnectionService.connectWithDatabase("jdbc:postgresql://localhost:5432/postgres", "ilia", "gjkbnt[")
 
+    TableInitializationService.createTables()
+
+    TableInitializationService.deleteTables()
+
+    DatabaseConnectionService.closeConnection()
 }

@@ -1,8 +1,8 @@
 package dao
 
-data class Employee(val personnelNumber: Int, val name: String, val department: String)
+data class Employee(val personnelNumber: Int, val name: String, val department: Int)
 
-data class Departament(val number: Int, val title: String, val telephoneNumber: Int)
+data class Department(val number: Int, val title: String, val telephoneNumber: Int)
 
 data class Project(val number: Int, val title: String, val description: String)
 
