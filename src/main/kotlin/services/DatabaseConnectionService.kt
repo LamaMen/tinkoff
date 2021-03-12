@@ -15,8 +15,17 @@ object DatabaseConnectionService {
         }
     }
 
-    fun getConnection(): Connection =
-        if (connection == null) throw ConnectionNotOpenException() else connection as Connection
+    fun executeMultipleUpdate(sql: List<String>) {
+        if (connection == null) return
+
+        try {
+            connection!!.createStatement().use { statement ->
+                sql.forEach { statement.executeUpdate(it) }
+            }
+        } catch (e: SQLException) {
+            println("Ошибка в запросе." + e.message)
+        }
+    }
 
     fun closeConnection() {
         connection?.close()

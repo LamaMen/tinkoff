@@ -1,5 +1,7 @@
 package services
 
+import services.DatabaseConnectionService.executeMultipleUpdate
+
 object TableInitializationService {
 
     fun createTables() {
@@ -9,7 +11,7 @@ object TableInitializationService {
                     "title VARCHAR(255), " +
                     "telephoneNumber INT, " +
                     "PRIMARY KEY(number)" +
-                ");",
+                    ");",
 
             "CREATE TABLE IF NOT EXISTS employee (" +
                     "personnel_number INT, " +
@@ -18,9 +20,9 @@ object TableInitializationService {
                     "PRIMARY KEY(personnel_number), " +
                     "CONSTRAINT fk_department " +
                         "FOREIGN KEY(department) " +
-                        "REFERENCES department(number) " +
-                        "ON DELETE SET NULL " +
-                ");",
+                            "REFERENCES department(number) " +
+                            "ON DELETE SET NULL " +
+                    ");",
 
             "CREATE TABLE IF NOT EXISTS project (" +
                     "number INT, " +
@@ -40,13 +42,83 @@ object TableInitializationService {
                         "FOREIGN KEY(employee) " +
                             "REFERENCES employee(personnel_number) " +
                             "ON DELETE CASCADE" +
-                ");"
+                    ");"
         )
 
         executeMultipleUpdate(sql)
     }
 
-    fun deleteTables() {
+    fun insertDataInTables() {
+        val sql = listOf(
+            "INSERT INTO department VALUES" +
+                " (1, 'IT', 1111111) ON CONFLICT DO NOTHING;",
+
+            "INSERT INTO department VALUES" +
+                    " (2, 'Продаж', 5553535) ON CONFLICT DO NOTHING;",
+
+            "INSERT INTO department VALUES" +
+                    " (3, 'Маркетинг', 5681256) ON CONFLICT DO NOTHING;",
+
+            "INSERT INTO department VALUES" +
+                    " (4, 'Кадры', 2225609) ON CONFLICT DO NOTHING;",
+
+            "INSERT INTO department VALUES" +
+                    " (5, 'Юридический', 8918989) ON CONFLICT DO NOTHING;",
+
+
+            "INSERT INTO employee VALUES" +
+                    " (1, 'Михаил', 5) ON CONFLICT DO NOTHING;",
+
+            "INSERT INTO employee VALUES" +
+                    " (2, 'Данила', 2) ON CONFLICT DO NOTHING;",
+
+            "INSERT INTO employee VALUES" +
+                    " (3, 'Иван', 1) ON CONFLICT DO NOTHING;",
+
+            "INSERT INTO employee VALUES" +
+                    " (4, 'Максим', 4) ON CONFLICT DO NOTHING;",
+
+            "INSERT INTO employee VALUES" +
+                    " (5, 'Кирилл', 3) ON CONFLICT DO NOTHING;",
+
+
+            "INSERT INTO project VALUES" +
+                    " (1, 'РПО-01', 'Первый проект предприятия') ON CONFLICT DO NOTHING;",
+
+            "INSERT INTO project VALUES" +
+                    " (3, 'СДП-01', 'Третий проект предприятия') ON CONFLICT DO NOTHING;",
+
+            "INSERT INTO project VALUES" +
+                    " (4, 'СДП-02', 'Четвертый проект предприятия') ON CONFLICT DO NOTHING;",
+
+            "INSERT INTO project VALUES" +
+                    " (5, 'СДП-03', 'Пятый проект предприятия') ON CONFLICT DO NOTHING;",
+
+            "INSERT INTO project VALUES" +
+                    " (2, 'РПО-02', 'Второй проет предприятия') ON CONFLICT DO NOTHING;",
+
+
+            "INSERT INTO connection VALUES" +
+                    " (3, 5) ON CONFLICT DO NOTHING;",
+
+            "INSERT INTO connection VALUES" +
+                    " (1, 3) ON CONFLICT DO NOTHING;",
+
+            "INSERT INTO connection VALUES" +
+                    " (1, 4) ON CONFLICT DO NOTHING;",
+
+            "INSERT INTO connection VALUES" +
+                    " (5, 4) ON CONFLICT DO NOTHING;",
+
+            "INSERT INTO connection VALUES" +
+                    " (3, 4) ON CONFLICT DO NOTHING;",
+        )
+
+
+        executeMultipleUpdate(sql)
+    }
+
+    private fun deleteTables() {
         val sql = listOf(
             "DROP TABLE IF EXISTS connection;",
             "DROP TABLE IF EXISTS project;",
@@ -55,12 +127,5 @@ object TableInitializationService {
         )
 
         executeMultipleUpdate(sql)
-    }
-
-    private fun executeMultipleUpdate(sql: List<String>) {
-        // TODO Check exception
-        DatabaseConnectionService.getConnection().createStatement().use { statement ->
-            sql.forEach { statement.executeUpdate(it) }
-        }
     }
 }

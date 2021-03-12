@@ -57,8 +57,7 @@ fun main() {
     DatabaseConnectionService.connectWithDatabase("jdbc:postgresql://localhost:5432/postgres", "ilia", "gjkbnt[")
 
     TableInitializationService.createTables()
-
-    TableInitializationService.deleteTables()
+    TableInitializationService.insertDataInTables()
 
     DatabaseConnectionService.closeConnection()
 }
