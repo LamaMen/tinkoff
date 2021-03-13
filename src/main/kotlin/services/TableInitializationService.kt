@@ -9,7 +9,7 @@ object TableInitializationService {
             "CREATE TABLE IF NOT EXISTS department (" +
                     "id INT, " +
                     "title VARCHAR(255), " +
-                    "telephoneNumber INT, " +
+                    "phone INT, " +
                     "PRIMARY KEY(id)" +
                     ");",
 
@@ -79,7 +79,16 @@ object TableInitializationService {
                     " (4, 'Максим', 4) ON CONFLICT DO NOTHING;",
 
             "INSERT INTO employee VALUES" +
-                    " (5, 'Кирилл', 3) ON CONFLICT DO NOTHING;",
+                    " (5, 'Кирилл1', 3) ON CONFLICT DO NOTHING;",
+
+            "INSERT INTO employee VALUES" +
+                    " (6, 'Кирилл2', 3) ON CONFLICT DO NOTHING;",
+
+            "INSERT INTO employee VALUES" +
+                    " (7, 'Кирилл3', 3) ON CONFLICT DO NOTHING;",
+
+            "INSERT INTO employee VALUES" +
+                    " (8, 'Кирилл4', 3) ON CONFLICT DO NOTHING;",
 
 
             "INSERT INTO project VALUES" +

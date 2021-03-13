@@ -23,7 +23,7 @@ object GettingDataFromDatabaseService {
     }
 
     fun getDepartmentById(id: Int): Department? {
-        val sql = "SELECT id, title, telephoneNumber FROM department WHERE id = ?;"
+        val sql = "SELECT id, title, phone FROM department WHERE id = ?;"
         val resultSet = DatabaseConnectionService.getDataById(sql, id)
 
         var department: Department? = null
@@ -31,7 +31,7 @@ object GettingDataFromDatabaseService {
         while (resultSet.next()) {
             val departmentId = resultSet.getInt("id")
             val title = resultSet.getString("title")
-            val telephoneNumber = resultSet.getInt("telephoneNumber")
+            val telephoneNumber = resultSet.getInt("phone")
             department = Department(departmentId, title, telephoneNumber)
         }
 
@@ -77,7 +77,7 @@ object GettingDataFromDatabaseService {
     }
 
     fun getEmployeesWithDepartment(): List<EmployeeWithDepartment> {
-        val sql = "SELECT e.id, e.name, d.title, d.telephoneNumber " +
+        val sql = "SELECT e.id, e.name, d.title, d.phone " +
                 "FROM employee e " +
                 "INNER JOIN department d ON e.department = d.id;"
 
@@ -89,7 +89,7 @@ object GettingDataFromDatabaseService {
             val employeeId = resultSet.getInt("id")
             val name = resultSet.getString("name")
             val departmentTitle = resultSet.getString("title")
-            val departmentPhone = resultSet.getInt("telephoneNumber")
+            val departmentPhone = resultSet.getInt("phone")
             employees.add(EmployeeWithDepartment(employeeId, name, departmentTitle, departmentPhone))
         }
 
@@ -121,5 +121,52 @@ object GettingDataFromDatabaseService {
         return employees
     }
 
+    fun groupEmployeesByDepartment(): Map<Int, List<Employee>> {
+        val sql = "SELECT * " +
+                "FROM (SELECT department FROM employee GROUP BY department) AS ed " +
+                "LEFT OUTER JOIN employee e on e.department = ed.department;"
+
+        val resultSet = DatabaseConnectionService.executeData(sql)
+
+        val employeesByDepartment = mutableMapOf<Int, MutableList<Employee>>()
+
+        while(resultSet.next()){
+            val department = resultSet.getInt("department")
+            val id = resultSet.getInt("id")
+            val name = resultSet.getString("name")
+
+            if (!employeesByDepartment.containsKey(department)) {
+                employeesByDepartment[department] = mutableListOf()
+            }
+
+            val employees = employeesByDepartment[department]
+            employees?.add(Employee(id, name, department))
+        }
+
+        resultSet.close()
+
+        return employeesByDepartment
+    }
+
+    fun sortDepartmentByPhone(): List<Department> {
+        val sql = "SELECT id, title, phone " +
+                "FROM department " +
+                "ORDER BY phone DESC;"
+
+        val resultSet = DatabaseConnectionService.executeData(sql)
+
+        val departments = mutableListOf<Department>()
+
+        while(resultSet.next()){
+            val id = resultSet.getInt("id")
+            val title = resultSet.getString("title")
+            val phone = resultSet.getInt("phone")
+            departments.add(Department(id, title, phone))
+        }
+
+        resultSet.close()
+
+        return departments
+    }
 
 }
