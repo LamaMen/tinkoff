@@ -2,6 +2,7 @@ package services
 
 import java.sql.Connection
 import java.sql.DriverManager
+import java.sql.ResultSet
 import java.sql.SQLException
 
 object DatabaseConnectionService {
@@ -13,6 +14,15 @@ object DatabaseConnectionService {
         } catch (e: SQLException) {
             println("Ошибка подключения к базе данных!")
         }
+    }
+
+    fun getDataById(sql: String, id: Int): ResultSet {
+        if (connection == null) throw ConnectionNotOpenException()
+
+        val statement = connection!!.prepareStatement(sql)
+        statement.setInt(1, id)
+
+        return statement.executeQuery()
     }
 
     fun executeMultipleUpdate(sql: List<String>) {
