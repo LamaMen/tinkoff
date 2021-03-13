@@ -7,28 +7,28 @@ object TableInitializationService {
     fun createTables() {
         val sql = listOf(
             "CREATE TABLE IF NOT EXISTS department (" +
-                    "number INT, " +
+                    "id INT, " +
                     "title VARCHAR(255), " +
                     "telephoneNumber INT, " +
-                    "PRIMARY KEY(number)" +
+                    "PRIMARY KEY(id)" +
                     ");",
 
             "CREATE TABLE IF NOT EXISTS employee (" +
-                    "personnel_number INT, " +
+                    "id INT, " +
                     "name VARCHAR(255), " +
                     "department INT, " +
-                    "PRIMARY KEY(personnel_number), " +
+                    "PRIMARY KEY(id), " +
                     "CONSTRAINT fk_department " +
                         "FOREIGN KEY(department) " +
-                            "REFERENCES department(number) " +
+                            "REFERENCES department(id) " +
                             "ON DELETE SET NULL " +
                     ");",
 
             "CREATE TABLE IF NOT EXISTS project (" +
-                    "number INT, " +
+                    "id INT, " +
                     "title VARCHAR(255), " +
                     "description VARCHAR(255), " +
-                    "PRIMARY KEY(number));",
+                    "PRIMARY KEY(id));",
 
             "CREATE TABLE IF NOT EXISTS connection (" +
                     "project INT, " +
@@ -36,11 +36,11 @@ object TableInitializationService {
                     "PRIMARY KEY(project, employee), " +
                     "CONSTRAINT fk_project " +
                         "FOREIGN KEY(project) " +
-                            "REFERENCES project(number) " +
+                            "REFERENCES project(id) " +
                             "ON DELETE CASCADE," +
                     "CONSTRAINT fk_employee " +
                         "FOREIGN KEY(employee) " +
-                            "REFERENCES employee(personnel_number) " +
+                            "REFERENCES employee(id) " +
                             "ON DELETE CASCADE" +
                     ");"
         )
@@ -118,7 +118,7 @@ object TableInitializationService {
         executeMultipleUpdate(sql)
     }
 
-    private fun deleteTables() {
+    fun deleteTables() {
         val sql = listOf(
             "DROP TABLE IF EXISTS connection;",
             "DROP TABLE IF EXISTS project;",

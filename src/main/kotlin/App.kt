@@ -60,5 +60,11 @@ fun main() {
     TableInitializationService.createTables()
     TableInitializationService.insertDataInTables()
 
+    println(GettingDataFromDatabaseService.getEmployeeById(2))
+    println(GettingDataFromDatabaseService.getDepartmentById(3))
+    println(GettingDataFromDatabaseService.getProjectById(5))
+
+    TableInitializationService.deleteTables()
+
     DatabaseConnectionService.closeConnection()
 }
