@@ -64,7 +64,10 @@ fun main() {
     println(GettingDataFromDatabaseService.getDepartmentById(3))
     println(GettingDataFromDatabaseService.getProjectById(5))
 
-    println(GettingDataFromDatabaseService.get())
+    println(GettingDataFromDatabaseService.getProjectsAfterSecond())
+
+    println(GettingDataFromDatabaseService.getEmployeesWithDepartment())
+    println(GettingDataFromDatabaseService.getEmployeesWithProjects())
 
     TableInitializationService.deleteTables()
 
