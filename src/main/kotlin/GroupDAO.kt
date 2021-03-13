@@ -6,5 +6,5 @@ object GroupDAO {
     )
 
     fun getGroups(): List<Group> = groups
-    fun getGroupsByNumber(groupNumber: Int): List<Group> = groups.filter { it.number == groupNumber }
+    fun getGroupById(groupId: Int): Group = groups.first { it.id == groupId }
 }

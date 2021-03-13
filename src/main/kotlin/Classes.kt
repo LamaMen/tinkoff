@@ -1,20 +1,20 @@
-data class Student(val studentNumber: Int, val name: String, val surname: String, val groupNumber: Int) {
-    override fun toString(): String = "$name $surname, группа $groupNumber"
+data class Student(val studentId: Int, val name: String, val surname: String, val groupId: Int) {
+    override fun toString(): String = "$name $surname, группа $groupId"
 }
 
-data class Group(val number: Int, val specialty: String, val faculty: String) {
-    override fun toString(): String = "Группа $number, $faculty, $specialty"
+data class Group(val id: Int, val specialty: String, val faculty: String) {
+    override fun toString(): String = "Группа $id, $faculty, $specialty"
 }
 
-data class GroupWithStudents(val number: Int, val specialty: String, val faculty: String, val students: List<Student>) {
+data class GroupWithStudents(val id: Int, val specialty: String, val faculty: String, val students: List<Student>) {
 
-    constructor(group: Group) : this(
-            group.number,
-            group.specialty,
-            group.faculty,
-            StudentsDAO.getStudentsByGroupNumber(group.number)
+    constructor(group: Group, students: List<Student>) : this(
+        group.id,
+        group.specialty,
+        group.faculty,
+        students,
     )
 
-    override fun toString(): String = "Группа $number, $faculty, $specialty, стуженты: $students"
+    override fun toString(): String = "Группа $id, $faculty, $specialty, стуженты: $students"
 
 }

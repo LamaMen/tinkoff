@@ -1,3 +1,5 @@
+fun List<GroupWithStudents>.print(): String = this.joinToString(separator = ", ") { it.id.toString() }
+
 fun main() {
     println("Все студенты:")
     for (student in StudentsDAO.getStudents()) {
@@ -12,7 +14,7 @@ fun main() {
     println()
 
     println("Студенты группы 9001:")
-    for (student in StudentsDAO.getStudentsByGroupNumber(9001)) {
+    for (student in StudentsDAO.getStudentsByGroupId(9001)) {
         println("  $student")
     }
     println()
@@ -29,9 +31,9 @@ fun main() {
     }
     println()
 
-    println("Группы с факультета ИКНТ:")
-    for (group in GroupService.filterGroupByFaculty("ИКНТ")) {
-        println("  $group")
+    println("Группы сгруппированные по специальностям:")
+    for (group in GroupService.groupingGroupsBySpecialty()) {
+        println("  ${group.key}: ${group.value.print()}")
     }
     println()
 

@@ -10,5 +10,5 @@ object StudentsDAO {
     )
 
     fun getStudents(): List<Student> = students
-    fun getStudentsByGroupNumber(neededGroup: Int): List<Student> = students.filter { it.groupNumber == neededGroup }
+    fun getStudentsByGroupId(neededGroup: Int): List<Student> = students.filter { it.groupId == neededGroup }
 }

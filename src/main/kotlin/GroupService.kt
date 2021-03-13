@@ -13,15 +13,19 @@ object GroupService {
     */
 
     private val groupsWithStudents = GroupDAO.getGroups()
-            .map { group ->
-                GroupWithStudents(group)
-            }
+        .map { group -> createGroupWithStudents(group) }
 
     fun getGroupWithStudents(): List<GroupWithStudents> = groupsWithStudents
 
-    fun getSortedGroupsByNumber(): List<GroupWithStudents> = groupsWithStudents.sortedBy(GroupWithStudents::number)
+    fun getSortedGroupsByNumber(): List<GroupWithStudents> = groupsWithStudents.sortedBy(GroupWithStudents::id)
 
-    fun filterGroupByFaculty(faculty: String): List<GroupWithStudents> = groupsWithStudents.filter { it.faculty == faculty }
+    fun groupingGroupsBySpecialty(): Map<String, List<GroupWithStudents>> =
+        groupsWithStudents.groupBy(GroupWithStudents::specialty)
 
     fun countBy(predicate: (GroupWithStudents) -> Boolean): Int = groupsWithStudents.count(predicate)
+
+    private fun createGroupWithStudents(group: Group): GroupWithStudents {
+        val students = StudentsDAO.getStudentsByGroupId(group.id)
+        return GroupWithStudents(group, students)
+    }
 }
