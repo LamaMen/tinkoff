@@ -25,6 +25,14 @@ object DatabaseConnectionService {
         return statement.executeQuery()
     }
 
+    fun executeData(sql: String): ResultSet {
+        if (connection == null) throw ConnectionNotOpenException()
+
+        val statement = connection!!.createStatement()
+
+        return statement.executeQuery(sql)
+    }
+
     fun executeMultipleUpdate(sql: List<String>) {
         if (connection == null) return
 

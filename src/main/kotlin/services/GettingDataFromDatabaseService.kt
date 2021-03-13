@@ -60,4 +60,23 @@ object GettingDataFromDatabaseService {
         return project
     }
 
+    fun get(): List<Project> {
+        val sql = "SELECT id, title, description FROM project WHERE id > 2"
+        val resultSet = DatabaseConnectionService.executeData(sql)
+
+        val projects = mutableListOf<Project>()
+
+        while(resultSet.next()){
+            val projectId = resultSet.getInt("id")
+            val title = resultSet.getString("title")
+            val description = resultSet.getString("description")
+            projects.add(Project(projectId, title, description))
+        }
+
+        resultSet.close()
+
+        return projects
+    }
+
+
 }
