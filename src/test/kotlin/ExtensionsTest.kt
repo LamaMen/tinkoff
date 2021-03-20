@@ -1,6 +1,7 @@
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertAll
+import org.junit.jupiter.api.assertThrows
 
 class ExtensionsTest {
 
@@ -18,9 +19,7 @@ class ExtensionsTest {
 
     @Test
     fun `test extension function in the incorrect case`() {
-        val exception = assertThrows(StringEmptyException::class.java) {
-            "".isEvenLength()
-        }
+        val exception = assertThrows<StringEmptyException> { "".isEvenLength() }
         assertEquals("String is empty", exception.message)
     }
 }

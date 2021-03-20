@@ -18,10 +18,14 @@ class MuseumTest {
     @Test
     fun `test of getting an existing picture by id`() {
         assertEquals("Starlight Night", museum.getById(0))
+        assertEquals("Mona Lisa", museum.getById(1))
+        assertEquals("Girl with peaches", museum.getById(2))
     }
 
     @Test
     fun `test of getting a non-existent picture by id`() {
         assertNull(museum.getById(15))
+        assertNull(museum.getById(3))
+        assertNull(museum.getById(-1))
     }
 }
