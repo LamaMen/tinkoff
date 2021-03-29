@@ -2,11 +2,10 @@ package services
 
 import java.sql.Connection
 import java.sql.DriverManager
-import java.sql.ResultSet
 import java.sql.SQLException
 
 object DatabaseConnectionService {
-    private var connection: Connection? = null
+    private lateinit var connection: Connection
 
     fun connectWithDatabase(dbUrl: String, user: String, password: String) {
         try {
@@ -16,36 +15,9 @@ object DatabaseConnectionService {
         }
     }
 
-    fun getDataById(sql: String, id: Int): ResultSet {
-        if (connection == null) throw ConnectionNotOpenException()
-
-        val statement = connection!!.prepareStatement(sql)
-        statement.setInt(1, id)
-
-        return statement.executeQuery()
-    }
-
-    fun executeData(sql: String): ResultSet {
-        if (connection == null) throw ConnectionNotOpenException()
-
-        val statement = connection!!.createStatement()
-
-        return statement.executeQuery(sql)
-    }
-
-    fun executeMultipleUpdate(sql: List<String>) {
-        if (connection == null) return
-
-        try {
-            connection!!.createStatement().use { statement ->
-                sql.forEach { statement.executeUpdate(it) }
-            }
-        } catch (e: SQLException) {
-            println("Ошибка в запросе." + e.message)
-        }
-    }
+    fun getConnection() = if (::connection.isInitialized) connection else throw ConnectionNotOpenException()
 
     fun closeConnection() {
-        connection?.close()
+        connection.close()
     }
 }
