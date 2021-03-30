@@ -73,11 +73,12 @@ object GettingDataFromDatabaseService {
     private fun <T> getEntityById(id: Int, sql: String, block: (ResultSet) -> T): T? {
         return try {
             val connection = DatabaseConnectionService.getConnection()
-            val statement = connection.prepareStatement(sql)
-            statement.setInt(1, id)
-            statement.executeQuery().use { resultSet ->
-                resultSet.next()
-                block(resultSet)
+            connection.prepareStatement(sql).use { statement ->
+                statement.setInt(1, id)
+                statement.executeQuery().use { resultSet ->
+                    resultSet.next()
+                    block(resultSet)
+                }
             }
         } catch (e: ConnectionNotOpenException) {
             println("Соединение с базой не установлено")
@@ -146,6 +147,7 @@ object GettingDataFromDatabaseService {
         val name = resultSet.getString("name")
         val department = resultSet.getInt("department")
         val project = resultSet.getString("title")
+
         return EmployeeWithProject(employeeId, name, department, project)
     }
 }
