@@ -1,5 +1,4 @@
 object EmployeeService {
-
     suspend fun getAllEmployees(): List<EmployeeWithSalary> {
         val employees = EmployeeDAO.getAllEmployees()
         val salaries = SalaryDAO.getAllSalaries()
