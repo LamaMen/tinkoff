@@ -6,7 +6,7 @@ import kotlin.random.Random
 
 class SalaryService {
     @ExperimentalCoroutinesApi
-    fun subscribeToSalary(employee: Employee) {
+    fun subscribeToSalary(employee: EmployeeWithSalary) {
         employee.salaryChanel = GlobalScope.produce {
             while (true) {
                 val salaryWithBonus = employee.salary * Random.nextDouble(1.0, 2.0)

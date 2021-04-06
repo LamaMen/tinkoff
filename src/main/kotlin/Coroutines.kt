@@ -1,14 +1,17 @@
-import kotlinx.coroutines.*
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.runBlocking
 
 @ExperimentalCoroutinesApi
 fun main() = runBlocking {
+    workWithTwoServices()
+    subscribeToEvent()
+}
+
+@ExperimentalCoroutinesApi
+suspend fun subscribeToEvent() {
     val salaryService = SalaryService()
 
-    val employees = listOf(
-        Employee("Andrew", 10, 0),
-        Employee("Ilia", 1000, 0),
-        Employee("Danny", 1, 0),
-    )
+    val employees = EmployeeService.getAllEmployees()
 
     for (employee in employees) {
         salaryService.subscribeToSalary(employee)
@@ -22,4 +25,9 @@ fun main() = runBlocking {
         }
         println()
     }
+}
+
+suspend fun workWithTwoServices() {
+    val employee = EmployeeService.getEmployeeWithSalaryById(2)
+    println("Рабочий под номером 2 это ${employee.name}")
 }
