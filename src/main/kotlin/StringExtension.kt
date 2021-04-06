@@ -1,5 +1,3 @@
-import java.lang.Exception
-
 fun String.isEvenLength(): Boolean {
     if (this.isEmpty()) throw StringEmptyException("String is empty")
 
