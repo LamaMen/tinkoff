@@ -1,6 +1,8 @@
 package database
 
 import models.Coast
+import models.Income
+import models.User
 import org.hibernate.SessionFactory
 import org.hibernate.cfg.Configuration
 import java.io.Closeable
@@ -12,7 +14,9 @@ object DatabaseSession : Closeable {
         if (factory == null) {
             factory = Configuration()
                 .configure()
+                .addAnnotatedClass(User::class.java)
                 .addAnnotatedClass(Coast::class.java)
+                .addAnnotatedClass(Income::class.java)
                 .buildSessionFactory()
         }
 
