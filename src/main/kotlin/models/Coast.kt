@@ -1,6 +1,5 @@
 package models
 
-import java.time.LocalDate
 import java.util.*
 import javax.persistence.*
 
@@ -9,5 +8,8 @@ class Coast(
     title: String,
     amount: Long,
     @Column(name = "date") @Temporal(TemporalType.DATE) val date: Date,
-    @ManyToOne(cascade = [CascadeType.ALL]) @JoinColumn(name = "user_id") val user: User
-) : BaseFinanceEntity(title, amount)
+) : BaseFinanceEntity(title, amount) {
+    @ManyToOne(cascade = [CascadeType.ALL])
+    @JoinColumn(name = "user_id")
+    var user: User? = null
+}

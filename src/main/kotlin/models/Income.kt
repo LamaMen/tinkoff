@@ -6,5 +6,8 @@ import javax.persistence.*
 class Income(
     title: String,
     amount: Long,
-    @ManyToOne(cascade = [CascadeType.ALL]) @JoinColumn(name = "user_id") val user: User
-) : BaseFinanceEntity(title, amount)
+) : BaseFinanceEntity(title, amount) {
+    @ManyToOne(cascade = [CascadeType.ALL])
+    @JoinColumn(name = "user_id")
+    var user: User? = null
+}
