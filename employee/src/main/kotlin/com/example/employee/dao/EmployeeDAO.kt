@@ -14,7 +14,7 @@ class EmployeeDAO : DAO<Employee> {
 
     override fun getAll(): List<Employee> = employees
 
-    override fun getById(id: Int): Employee? = employees.find { compareById(id, it) }
+    override fun getById(id: Int): Employee = employees.find { compareById(id, it) } ?: throw NoSuchElementException()
 
     override fun add(element: Employee) {
         employees.add(element)

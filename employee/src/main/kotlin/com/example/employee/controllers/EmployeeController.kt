@@ -12,8 +12,8 @@ class EmployeeController(val employeeDAO: DAO<Employee>) {
     fun getAllEmployees() = employeeDAO.getAll()
 
     @GetMapping("/{id}")
-    fun getEmployeeById(@PathVariable id: String):Employee {
-        return employeeDAO.getById(id.toInt()) ?: throw NoSuchElementException()
+    fun getEmployeeById(@PathVariable id: Int): Employee {
+        return employeeDAO.getById(id)
     }
 
     @PostMapping
@@ -23,12 +23,12 @@ class EmployeeController(val employeeDAO: DAO<Employee>) {
     }
 
     @PutMapping("/{id}")
-    fun updateEmployee(@PathVariable id: String, @RequestBody employee: Employee): Employee {
-        return employeeDAO.update(id.toInt(), employee)
+    fun updateEmployee(@PathVariable id: Int, @RequestBody employee: Employee): Employee {
+        return employeeDAO.update(id, employee)
     }
 
     @DeleteMapping("{id}")
-    fun deleteEmployee(@PathVariable id: String) {
-        employeeDAO.delete(id.toInt())
+    fun deleteEmployee(@PathVariable id: Int) {
+        employeeDAO.delete(id)
     }
 }

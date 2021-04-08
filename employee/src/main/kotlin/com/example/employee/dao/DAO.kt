@@ -3,7 +3,7 @@ package com.example.employee.dao
 interface DAO<T> {
     fun getAll(): List<T>
 
-    fun getById(id: Int): T?
+    fun getById(id: Int): T
 
     fun add(element: T)
 

@@ -1,6 +1,6 @@
 package com.example.employee.models
 
-data class Employee(
+open class Employee(
     val id: Int,
     val name: String,
     val age: Int,
