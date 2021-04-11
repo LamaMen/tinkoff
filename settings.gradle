@@ -1,2 +1,4 @@
 rootProject.name = 'tinkoff'
 
+include 'employee'
+include 'salary'
