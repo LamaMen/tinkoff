@@ -2,7 +2,9 @@ package com.example.employee.controllers
 
 import com.example.employee.dao.DAO
 import com.example.employee.models.Employee
+import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.server.ResponseStatusException
 
 @RestController()
 @RequestMapping("/employee")
@@ -31,4 +33,10 @@ class EmployeeController(val employeeDAO: DAO<Employee>) {
     fun deleteEmployee(@PathVariable id: Int) {
         employeeDAO.delete(id)
     }
+
+    @ExceptionHandler(NoSuchElementException::class)
+    fun handleException() {
+        throw ResponseStatusException(HttpStatus.NOT_FOUND)
+    }
+
 }

@@ -1,6 +1,7 @@
 package com.example.employee.integration
 
 import com.example.employee.dao.DAO
+import com.example.employee.exception.NoEmployeeException
 import com.example.employee.models.Employee
 import com.example.employee.models.EmployeeWithSalary
 import com.example.employee.models.Salary
@@ -13,7 +14,7 @@ class EmployeeIntegrationComponent(val employeesDao: DAO<Employee>) {
 
     fun getEmployeeWithSalary(id: Int): EmployeeWithSalary {
         val salary =
-            restTemplate.getForObject("http://localhost:9090/$id", Salary::class.java) ?: throw NoSuchElementException()
+            restTemplate.getForObject("http://localhost:9090/$id", Salary::class.java) ?: throw NoEmployeeException()
         val employee = employeesDao.getById(id)
         return createEmployeeWithSalary(employee, salary)
     }

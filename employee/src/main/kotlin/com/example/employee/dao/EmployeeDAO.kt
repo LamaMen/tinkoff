@@ -1,5 +1,6 @@
 package com.example.employee.dao
 
+import com.example.employee.exception.NoEmployeeException
 import com.example.employee.models.Employee
 import org.springframework.stereotype.Repository
 
@@ -14,7 +15,7 @@ class EmployeeDAO : DAO<Employee> {
 
     override fun getAll(): List<Employee> = employees
 
-    override fun getById(id: Int): Employee = employees.find { compareById(id, it) } ?: throw NoSuchElementException()
+    override fun getById(id: Int): Employee = employees.find { compareById(id, it) } ?: throw NoEmployeeException()
 
     override fun add(element: Employee) {
         employees.add(element)
@@ -22,7 +23,7 @@ class EmployeeDAO : DAO<Employee> {
 
     override fun update(id: Int, element: Employee): Employee {
         val indexOfEmployee = employees.indexOfFirst { compareById(id, it) }
-        if (indexOfEmployee == -1) throw NoSuchElementException("Работника с таким id не существует.")
+        if (indexOfEmployee == -1) throw NoEmployeeException("Работника с таким id не существует.")
 
         employees[indexOfEmployee] = element
         return element
