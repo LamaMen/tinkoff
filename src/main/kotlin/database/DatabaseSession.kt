@@ -1,16 +1,18 @@
 package database
 
+import exceptions.FactoryNotOpenException
 import models.Coast
 import models.Income
 import models.User
+import org.hibernate.Session
 import org.hibernate.SessionFactory
 import org.hibernate.cfg.Configuration
 import java.io.Closeable
 
 object DatabaseSession : Closeable {
-    private var factory: SessionFactory? = null
+    var factory: SessionFactory? = null
 
-    fun getFactory(): SessionFactory {
+    fun openFactory() {
         if (factory == null) {
             factory = Configuration()
                 .configure()
@@ -19,9 +21,9 @@ object DatabaseSession : Closeable {
                 .addAnnotatedClass(Income::class.java)
                 .buildSessionFactory()
         }
-
-        return factory!!
     }
+
+    fun getSession(): Session = factory?.currentSession ?: throw FactoryNotOpenException()
 
     override fun close() {
         factory?.close()
