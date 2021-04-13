@@ -9,7 +9,7 @@ class Coast(
     amount: Long,
     @Column(name = "date") @Temporal(TemporalType.DATE) val date: Date,
 ) : BaseFinanceEntity(title, amount) {
-    @ManyToOne(cascade = [CascadeType.ALL])
+    @ManyToOne
     @JoinColumn(name = "user_id")
     var user: User? = null
 }
