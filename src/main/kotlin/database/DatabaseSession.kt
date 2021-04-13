@@ -1,8 +1,7 @@
 package database
 
 import exceptions.FactoryNotOpenException
-import models.Coast
-import models.Income
+import models.MoneyTransaction
 import models.User
 import org.hibernate.Session
 import org.hibernate.SessionFactory
@@ -17,8 +16,7 @@ object DatabaseSession : Closeable {
             factory = Configuration()
                 .configure()
                 .addAnnotatedClass(User::class.java)
-                .addAnnotatedClass(Coast::class.java)
-                .addAnnotatedClass(Income::class.java)
+                .addAnnotatedClass(MoneyTransaction::class.java)
                 .buildSessionFactory()
         }
     }

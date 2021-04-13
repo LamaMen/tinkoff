@@ -4,10 +4,12 @@ import java.util.*
 import javax.persistence.*
 
 @Entity
-class Coast(
+@Table(name = "money_transaction")
+class MoneyTransaction(
     title: String,
     amount: Long,
-    @Column(name = "date") @Temporal(TemporalType.DATE) val date: Date,
+    @Column(name = "is_coast") val isCoast: Boolean = true,
+    @Column(name = "date") @Temporal(TemporalType.DATE) val date: Date = Date(),
 ) : BaseFinanceEntity(title, amount) {
     @ManyToOne
     @JoinColumn(name = "user_id")

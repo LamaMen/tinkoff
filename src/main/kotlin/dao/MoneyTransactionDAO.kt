@@ -1,47 +1,50 @@
 package dao
 
 import database.DatabaseSession
-import models.Coast
+import models.MoneyTransaction
 import models.User
 
-class CoastDAO {
-    fun getCoastById(id: Int): Coast {
+class MoneyTransactionDAO {
+    fun getTransactionById(id: Int): MoneyTransaction {
         val session = DatabaseSession.getSession()
         session.beginTransaction()
 
-        val coast = session.get(Coast::class.java, id)
+        val coast = session.get(MoneyTransaction::class.java, id)
 
         session.transaction.commit()
         return coast
     }
 
-    fun getAllCoastsByUser(user: User): List<Coast> {
+    fun getAllCoastsByUser(user: User): List<MoneyTransaction> {
         val session = DatabaseSession.getSession()
         session.beginTransaction()
 
         val query =
-            session.createQuery("SELECT c FROM Coast c LEFT JOIN FETCH c.user where c.user=:user", Coast::class.java)
+            session.createQuery(
+                "SELECT t FROM MoneyTransaction t LEFT JOIN FETCH t.user where t.user=:user",
+                MoneyTransaction::class.java
+            )
         query.setParameter("user", user)
         val coasts = query.list()
 
         session.transaction.commit()
-        return coasts as List<Coast>
+        return coasts
     }
 
-    fun addCoast(coast: Coast, user: User) {
+    fun addCoast(moneyTransaction: MoneyTransaction, user: User) {
         val session = DatabaseSession.getSession()
         session.beginTransaction()
 
-        coast.user = user
-        session.save(coast)
+        moneyTransaction.user = user
+        session.save(moneyTransaction)
 
         session.transaction.commit()
     }
 
-    fun deleteCoast(coast: Coast) {
+    fun deleteCoast(moneyTransaction: MoneyTransaction) {
         val session = DatabaseSession.getSession()
         session.beginTransaction()
-        session.delete(coast)
+        session.delete(moneyTransaction)
         session.transaction.commit()
     }
 

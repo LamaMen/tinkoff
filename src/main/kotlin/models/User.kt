@@ -10,8 +10,5 @@ class User(
     @Column(name = "password") val password: String,
 ) : BaseEntity() {
     @OneToMany(cascade = [CascadeType.ALL], mappedBy = "user", fetch = FetchType.LAZY)
-    private val coasts: MutableSet<Coast> = mutableSetOf()
-
-    @OneToMany(cascade = [CascadeType.ALL], mappedBy = "user", fetch = FetchType.LAZY)
-    private val incomes: MutableSet<Income> = mutableSetOf()
+    private val moneyTransactions: MutableSet<MoneyTransaction> = mutableSetOf()
 }
