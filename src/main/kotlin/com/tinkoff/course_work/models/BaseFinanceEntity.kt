@@ -1,4 +1,4 @@
-package models
+package com.tinkoff.course_work.models
 
 import javax.persistence.Column
 import javax.persistence.MappedSuperclass

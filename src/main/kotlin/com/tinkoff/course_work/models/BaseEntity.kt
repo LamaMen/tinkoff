@@ -1,4 +1,4 @@
-package models
+package com.tinkoff.course_work.models
 
 import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType

@@ -1,8 +1,8 @@
-package database
+package com.tinkoff.course_work.database
 
-import exceptions.FactoryNotOpenException
-import models.MoneyTransaction
-import models.User
+import com.tinkoff.course_work.exceptions.FactoryNotOpenException
+import com.tinkoff.course_work.models.MoneyTransaction
+import com.tinkoff.course_work.models.User
 import org.hibernate.Session
 import org.hibernate.SessionFactory
 import org.hibernate.cfg.Configuration

@@ -1,8 +1,8 @@
-package dao
+package com.tinkoff.course_work.dao
 
-import database.DatabaseSession
-import models.MoneyTransaction
-import models.User
+import com.tinkoff.course_work.database.DatabaseSession
+import com.tinkoff.course_work.models.MoneyTransaction
+import com.tinkoff.course_work.models.User
 
 class MoneyTransactionDAO {
     fun getTransactionById(id: Int): MoneyTransaction {

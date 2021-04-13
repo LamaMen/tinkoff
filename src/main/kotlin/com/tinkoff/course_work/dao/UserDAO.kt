@@ -1,7 +1,7 @@
-package dao
+package com.tinkoff.course_work.dao
 
-import database.DatabaseSession
-import models.User
+import com.tinkoff.course_work.database.DatabaseSession
+import com.tinkoff.course_work.models.User
 
 class UserDAO {
     fun getUserByLogin(login: String): User {
