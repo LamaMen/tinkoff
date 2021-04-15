@@ -2,32 +2,51 @@ package com.tinkoff.course_work.dao
 
 import com.tinkoff.course_work.database.MoneyTransactionTable
 import com.tinkoff.course_work.models.MoneyTransaction
-import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.ResultRow
-import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.springframework.stereotype.Repository
 
 @Repository
-class MoneyTransactionDAO(val database: Database) {
-    fun getTransactionById(id: Int): MoneyTransaction =
+class MoneyTransactionDAO(private val database: Database) {
+    fun getTransactionById(id: Int, userId: Int): MoneyTransaction =
         transaction(database) {
             MoneyTransactionTable
-                .select { MoneyTransactionTable.id eq id }
-                .limit(1).single()
+                .select { checkTransactionId(id, userId) }
+                .single()
                 .let(::extractMoneyTransaction)
         }
 
 
-    fun getAllTransactionsByUser(): List<MoneyTransaction> = transaction(database) {
-        MoneyTransactionTable.selectAll().map(::extractMoneyTransaction)
+    fun getAllTransactionsByUser(userId: Int): List<MoneyTransaction> = transaction(database) {
+        MoneyTransactionTable
+            .select { MoneyTransactionTable.user eq userId }
+            .map(::extractMoneyTransaction)
     }
+
+    fun addTransaction(transaction: MoneyTransaction): Int =
+        transaction(database) {
+            MoneyTransactionTable.insertAndGetId {
+                it[amount] = transaction.amount
+                it[title] = transaction.title
+                it[date] = transaction.date
+                it[isCoast] = transaction.isCoast
+            }.value
+        }
+
+    fun deleteTransactionById(id: Int, userId: Int) {
+        transaction(database) {
+            MoneyTransactionTable.deleteWhere { checkTransactionId(id, userId) }
+        }
+    }
+
+    private fun checkTransactionId(transactionId: Int, userId: Int) =
+        MoneyTransactionTable.id eq transactionId and (MoneyTransactionTable.user eq userId)
 
     private fun extractMoneyTransaction(row: ResultRow) = MoneyTransaction(
         row[MoneyTransactionTable.id].value,
-        row[MoneyTransactionTable.amount],
         row[MoneyTransactionTable.title],
+        row[MoneyTransactionTable.amount],
         row[MoneyTransactionTable.date],
         row[MoneyTransactionTable.isCoast]
     )
