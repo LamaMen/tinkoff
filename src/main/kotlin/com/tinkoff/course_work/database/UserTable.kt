@@ -1,4 +1,4 @@
-package com.tinkoff.course_work.models
+package com.tinkoff.course_work.database
 
 import org.jetbrains.exposed.dao.id.IntIdTable
 
