@@ -24,13 +24,14 @@ class MoneyTransactionDAO(private val database: Database) {
             .map(::extractMoneyTransaction)
     }
 
-    fun addTransaction(transaction: MoneyTransaction): Int =
+    fun addTransaction(transaction: MoneyTransaction, userId: Int): Int =
         transaction(database) {
             MoneyTransactionTable.insertAndGetId {
                 it[amount] = transaction.amount
                 it[title] = transaction.title
                 it[date] = transaction.date
                 it[isCoast] = transaction.isCoast
+                it[user] = userId
             }.value
         }
 

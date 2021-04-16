@@ -7,7 +7,7 @@ data class Coast(
     val id: Int?,
     val title: String,
     val amount: Long,
-    val date: LocalDateTime
+    val date: LocalDateTime?
 )
 
 data class Income(
