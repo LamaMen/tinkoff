@@ -16,6 +16,11 @@ class CoastController(userService: UserService, val coastService: CoastService) 
         return coastService.getAllCoasts(user)
     }
 
+    @GetMapping("/{id}")
+    fun getEmployeeById(@PathVariable id: Int): Coast {
+        return coastService.getById(id, user)
+    }
+
     @PostMapping
     fun addCoastNow(@RequestBody coast: Coast): Coast {
         return coastService.addCoastNow(coast, user)

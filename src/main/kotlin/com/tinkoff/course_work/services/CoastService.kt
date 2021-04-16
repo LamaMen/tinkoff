@@ -10,16 +10,27 @@ import java.time.LocalDateTime
 @Service
 class CoastService(private val dao: MoneyTransactionDAO) {
     fun getAllCoasts(user: User): List<Coast> {
-        val id = user.id ?: throw NoSuchElementException()
+        val id = getUserId(user)
         return dao.getAllTransactionsByUser(id)
             .filter(MoneyTransaction::isCoast)
-            .map { Coast(it.id, it.title, it.amount, it.date) }
+            .map(::executeCoast)
     }
 
     fun addCoastNow(coast: Coast, user: User): Coast {
-        val userId = user.id ?: throw NoSuchElementException()
+        val userId = getUserId(user)
         val dateTimeNow = LocalDateTime.now()
         val coastId = dao.addTransaction(MoneyTransaction(null, coast.title, coast.amount, dateTimeNow, true), userId)
         return Coast(coastId, coast.title, coast.amount, dateTimeNow)
+    }
+
+    fun getById(id: Int, user: User): Coast {
+        val userId = getUserId(user)
+        return executeCoast(dao.getTransactionById(id, userId))
+    }
+
+    private fun getUserId(user: User) = user.id ?: throw NoSuchElementException()
+
+    private fun executeCoast(transaction: MoneyTransaction): Coast {
+        return Coast(transaction.id, transaction.title, transaction.amount, transaction.date)
     }
 }
