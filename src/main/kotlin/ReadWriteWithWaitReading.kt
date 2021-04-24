@@ -14,9 +14,7 @@ class WriteThread(private val resource: ResourceWithCountReaders) : Runnable {
         var i = 0
         while (i < times) {
             synchronized(resource) {
-                if (resource.countRead != countThreads) {
-                    Thread.yield()
-                } else {
+                if (resource.countRead == countThreads) {
                     println("increment resource: ${resource.increment()}")
                     resource.countRead = 0
                     i++
@@ -32,9 +30,7 @@ class ReadThread(private val resource: ResourceWithCountReaders) : Runnable {
         var lastValue = -1
         while (i < times) {
             synchronized(resource) {
-                if (resource.value == lastValue) {
-                    Thread.yield()
-                } else {
+                if (resource.value != lastValue) {
                     println("read from ${Thread.currentThread().name}: ${resource.value}")
                     lastValue = resource.value
                     resource.countRead++

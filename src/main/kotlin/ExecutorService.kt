@@ -11,11 +11,10 @@ fun main() {
 fun lunchExecutor(countThreads: Int): Long {
     val executor = Executors.newFixedThreadPool(countThreads)
     val startTime = System.currentTimeMillis()
-    val atomic = AtomicInteger()
 
 
     for (i in 1..countThreads) {
-        executor.execute(PoolThread(atomic))
+        executor.execute(PoolThread())
     }
 
     executor.shutdown()
@@ -24,16 +23,10 @@ fun lunchExecutor(countThreads: Int): Long {
     return System.currentTimeMillis() - startTime
 }
 
-class PoolThread(private val atomic: AtomicInteger) : Runnable {
+class PoolThread : Runnable {
+    private val atomic = AtomicInteger()
+
     override fun run() {
-        while (true) {
-            synchronized(atomic) {
-                if (atomic.get() < 1_000_000) {
-                    atomic.getAndIncrement()
-                } else {
-                    return
-                }
-            }
-        }
+        while (atomic.getAndIncrement() < 1_000_000) {}
     }
 }
