@@ -1,0 +1,53 @@
+version: '3.1'
+
+services:
+  employee:
+    container_name: employee
+    image: employee:1.0
+    environment:
+      - LOG_LEVEL=${APP_LOG_LEVEL}
+      - SALARY_URL=${APP_SALARY_SERVICE_URL}
+      - JDBC_URL=${APP_POSTGRES_URL}
+      - JDBC_USER=${DB_ADMIN_USER}
+      - JDBC_PASS=${DB_ADMIN_PASS}
+    depends_on:
+      - postgres_db
+      - salary
+    ports:
+      - "8080:8080"
+    volumes:
+      - /home/ilia/tinkoff/logs:/usr/src/logs
+
+  postgres_db:
+    container_name: postgres_db
+    image: postgres:11
+    environment:
+      - POSTGRES_DB=${POSTGRES_DB_NAME}
+      - POSTGRES_USER=${DB_ADMIN_USER}
+      - POSTGRES_PASSWORD=${DB_ADMIN_PASS}
+    ports:
+      - "5500:5432"
+
+  salary:
+    container_name: salary
+    image: salary:1.0
+    environment:
+      - LOG_LEVEL=${APP_LOG_LEVEL}
+      - JDBC_URL=${APP_MYSQL_URL}
+      - JDBC_USER=${DB_ADMIN_USER}
+      - JDBC_PASS=${DB_ADMIN_PASS}
+    depends_on:
+      - mysql_db
+    ports:
+      - "9090:9090"
+    volumes:
+      - /home/ilia/tinkoff/logs:/usr/src/logs
+
+  mysql_db:
+    container_name: mysql_db
+    image: mysql:8
+    environment:
+      - MYSQL_ROOT_PASSWORD=${DB_ADMIN_PASS}
+      - MYSQL_DATABASE=${MYSQL_DB_NAME}
+    ports:
+      - "5501:3306"
