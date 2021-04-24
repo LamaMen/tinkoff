@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController
 class SalaryController(val salaries: SalaryDAO) {
 
     @GetMapping("/{id}")
-    fun getSalary(@PathVariable id: String): Salary {
-        return salaries.getSalaryByEmployeeId(id.toInt())
+    fun getSalary(@PathVariable id: Int): Salary {
+        return salaries.getSalaryByEmployeeId(id)
     }
 }
