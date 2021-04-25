@@ -34,6 +34,13 @@ class CoastController(private val userService: UserService, private val coastSer
         return coastService.addCoastNow(coast, user)
     }
 
+    @PutMapping("/{id}")
+    fun updateCoast(@PathVariable id: Int, @RequestBody coast: Coast): Coast {
+        logger.info("Обновили расход ${coast.title}")
+        val user = userService.getUserByLogin("admin")
+        return coastService.updateCoast(id, coast, user)
+    }
+
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     fun deleteCoast(@PathVariable id: Int) {
