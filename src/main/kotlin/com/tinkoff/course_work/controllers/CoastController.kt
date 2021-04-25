@@ -4,6 +4,7 @@ import com.tinkoff.course_work.models.Coast
 import com.tinkoff.course_work.services.CoastService
 import com.tinkoff.course_work.services.UserService
 import org.slf4j.LoggerFactory
+import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 
 
@@ -31,5 +32,13 @@ class CoastController(private val userService: UserService, private val coastSer
         logger.info("Добавили расход ${coast.title}")
         val user = userService.getUserByLogin("admin")
         return coastService.addCoastNow(coast, user)
+    }
+
+    @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    fun deleteCoast(@PathVariable id: Int) {
+        logger.info("Удалили расход с id $id")
+        val user = userService.getUserByLogin("admin")
+        coastService.deleteCoastById(id, user)
     }
 }
