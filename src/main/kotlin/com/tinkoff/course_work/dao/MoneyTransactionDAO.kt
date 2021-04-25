@@ -1,6 +1,7 @@
 package com.tinkoff.course_work.dao
 
 import com.tinkoff.course_work.database.MoneyTransactionTable
+import com.tinkoff.course_work.exceptions.CoastNotFoundException
 import com.tinkoff.course_work.models.MoneyTransaction
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
@@ -9,20 +10,12 @@ import org.springframework.stereotype.Repository
 
 @Repository
 class MoneyTransactionDAO(private val database: Database) {
-    fun getTransactionById(id: Int, userId: Int): MoneyTransaction =
-        transaction(database) {
-            MoneyTransactionTable
-                .select { checkTransactionId(id, userId) }
-                .single()
-                .let(::extractMoneyTransaction)
-        }
-
-
-    fun getAllTransactionsByUser(userId: Int): List<MoneyTransaction> = transaction(database) {
-        MoneyTransactionTable
-            .select { MoneyTransactionTable.user eq userId }
-            .map(::extractMoneyTransaction)
+    fun getTransactionById(id: Int, userId: Int): MoneyTransaction {
+        return getCollectionFromDB(checkTransactionId(id, userId)).firstOrNull() ?: throw CoastNotFoundException()
     }
+
+    fun getAllTransactionsByUser(userId: Int): List<MoneyTransaction> =
+        getCollectionFromDB(MoneyTransactionTable.user eq userId)
 
     fun addTransaction(transaction: MoneyTransaction, userId: Int): Int =
         transaction(database) {
@@ -39,6 +32,12 @@ class MoneyTransactionDAO(private val database: Database) {
         transaction(database) {
             MoneyTransactionTable.deleteWhere { checkTransactionId(id, userId) }
         }
+    }
+
+    private fun getCollectionFromDB(condition: Op<Boolean>) = transaction(database) {
+        MoneyTransactionTable
+            .select { condition }
+            .map(::extractMoneyTransaction)
     }
 
     private fun checkTransactionId(transactionId: Int, userId: Int) =
