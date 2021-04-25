@@ -1,19 +1,29 @@
 package com.tinkoff.course_work.database
 
 import org.jetbrains.exposed.sql.Database
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 
 @Configuration
 class DataBaseConnection {
+    @Value("\${database.url}")
+    private lateinit var databaseUrl: String
+
+    @Value("\${database.user}")
+    private lateinit var databaseUser: String
+
+    @Value("\${database.password}")
+    private lateinit var databasePassword: String
+
 
     @Bean
     fun database(): Database {
         return Database.connect(
-            "jdbc:postgresql://localhost:5432/finances?useSSL=false&amp;serverTimezone=UTC",
+            databaseUrl,
             driver = "org.postgresql.Driver",
-            user = "ilia",
-            password = "gjkbnt["
+            user = databaseUser,
+            password = databasePassword
         )
     }
 }

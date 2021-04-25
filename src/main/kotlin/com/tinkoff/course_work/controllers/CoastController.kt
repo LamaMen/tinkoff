@@ -9,25 +9,27 @@ import org.springframework.web.bind.annotation.*
 
 @RestController
 @RequestMapping("/coast")
-class CoastController(userService: UserService, val coastService: CoastService) {
+class CoastController(private val userService: UserService, private val coastService: CoastService) {
     private var logger = LoggerFactory.getLogger(CoastController::class.java)
-    private val user = userService.getUserByLogin("admin")
 
     @GetMapping
     fun getAllCoasts(): List<Coast> {
         logger.info("Отдали все расходы")
+        val user = userService.getUserByLogin("admin")
         return coastService.getAllCoasts(user)
     }
 
     @GetMapping("/{id}")
     fun getEmployeeById(@PathVariable id: Int): Coast {
         logger.info("Отдали расход с id $id")
+        val user = userService.getUserByLogin("admin")
         return coastService.getById(id, user)
     }
 
     @PostMapping
     fun addCoastNow(@RequestBody coast: Coast): Coast {
         logger.info("Добавили расход ${coast.title}")
+        val user = userService.getUserByLogin("admin")
         return coastService.addCoastNow(coast, user)
     }
 }
