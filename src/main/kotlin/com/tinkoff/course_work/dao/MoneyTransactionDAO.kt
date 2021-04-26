@@ -3,6 +3,8 @@ package com.tinkoff.course_work.dao
 import com.tinkoff.course_work.database.MoneyTransactionTable
 import com.tinkoff.course_work.exceptions.TransactionNotFoundException
 import com.tinkoff.course_work.models.MoneyTransaction
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.statements.UpdateBuilder
@@ -11,28 +13,30 @@ import org.springframework.stereotype.Repository
 
 @Repository
 class MoneyTransactionDAO(private val database: Database) {
-    fun getTransactionById(id: Int?, userId: Int): MoneyTransaction {
+    suspend fun getTransactionById(id: Int?, userId: Int): MoneyTransaction {
         return getCollectionFromDB(checkTransactionId(id, userId)).firstOrNull() ?: throw TransactionNotFoundException()
     }
 
-    fun getAllTransactionsByUser(userId: Int): List<MoneyTransaction> =
+    suspend fun getAllTransactionsByUser(userId: Int): List<MoneyTransaction> =
         getCollectionFromDB(MoneyTransactionTable.user eq userId)
 
-    fun addTransaction(transaction: MoneyTransaction, userId: Int): Int = transaction(database) {
+    suspend fun addTransaction(transaction: MoneyTransaction, userId: Int): Int = dbQuery {
         MoneyTransactionTable.insertAndGetId {
             setValues(it, transaction, userId)
         }.value
     }
 
-    fun updateTransaction(transaction: MoneyTransaction, userId: Int) {
-        saveChanges(transaction, userId)
+    suspend fun updateTransaction(transaction: MoneyTransaction, userId: Int) = dbQuery {
+        MoneyTransactionTable.update({ checkTransactionId(transaction.id, userId) }) {
+            setValues(it, transaction, userId)
+        }
     }
 
-    fun deleteTransactionById(id: Int, userId: Int) = transaction(database) {
+    suspend fun deleteTransactionById(id: Int, userId: Int) = dbQuery {
         MoneyTransactionTable.deleteWhere { checkTransactionId(id, userId) }
     }
 
-    private fun getCollectionFromDB(condition: Op<Boolean>) = transaction(database) {
+    private suspend fun getCollectionFromDB(condition: Op<Boolean>) = dbQuery {
         MoneyTransactionTable
             .select { condition }
             .map(::extractMoneyTransaction)
@@ -54,12 +58,6 @@ class MoneyTransactionDAO(private val database: Database) {
         row[MoneyTransactionTable.isCoast]
     )
 
-    private fun saveChanges(transaction: MoneyTransaction, userId: Int): Int = transaction(database) {
-        MoneyTransactionTable.update({ checkTransactionId(transaction.id, userId) }) {
-            setValues(it, transaction, userId)
-        }
-    }
-
     private fun MoneyTransactionTable.setValues(
         it: UpdateBuilder<Int>,
         transaction: MoneyTransaction,
@@ -70,6 +68,10 @@ class MoneyTransactionDAO(private val database: Database) {
         it[date] = transaction.date
         it[isCoast] = transaction.isCoast
         it[user] = userId
+    }
+
+    suspend fun <T> dbQuery(block: () -> T): T = withContext(Dispatchers.IO) {
+        transaction(database) { block() }
     }
 }
 

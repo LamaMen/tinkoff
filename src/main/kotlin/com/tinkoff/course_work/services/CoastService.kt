@@ -9,26 +9,26 @@ import org.springframework.stereotype.Service
 
 @Service
 class CoastService(private val dao: MoneyTransactionDAO) {
-    fun getAllCoasts(user: User): List<Coast> {
+    suspend fun getAllCoasts(user: User): List<Coast> {
         val id = getUserId(user)
         return dao.getAllTransactionsByUser(id)
             .filter(MoneyTransaction::isCoast)
             .map(::executeCoast)
     }
 
-    fun getById(id: Int, user: User): Coast {
+    suspend fun getById(id: Int, user: User): Coast {
         val userId = getUserId(user)
         return executeCoast(dao.getTransactionById(id, userId))
     }
 
-    fun addCoastNow(coast: Coast, user: User): Coast {
+    suspend fun addCoastNow(coast: Coast, user: User): Coast {
         val userId = getUserId(user)
         val transaction = MoneyTransaction(coast)
         val coastId = dao.addTransaction(transaction, userId)
         return Coast(coastId, transaction)
     }
 
-    fun updateCoast(id: Int, coast: Coast, user: User): Coast {
+    suspend fun updateCoast(id: Int, coast: Coast, user: User): Coast {
         val userId = getUserId(user)
         val transactionFromDB = dao.getTransactionById(id, userId)
         val savedTransaction = MoneyTransaction(coast, transactionFromDB)
@@ -36,7 +36,7 @@ class CoastService(private val dao: MoneyTransactionDAO) {
         return Coast(savedTransaction)
     }
 
-    fun deleteCoastById(id: Int, user: User) {
+    suspend fun deleteCoastById(id: Int, user: User) {
         val userId = getUserId(user)
         dao.deleteTransactionById(id, userId)
     }
