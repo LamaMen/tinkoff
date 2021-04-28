@@ -23,6 +23,10 @@ dependencies {
     annotationProcessor("org.springframework.boot:spring-boot-configuration-processor")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 
+    // вот эти две зависимости
+    implementation("org.reactivestreams:reactive-streams:1.0.0")
+    implementation("io.projectreactor:reactor-core:3.4.5")
+
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("io.jsonwebtoken:jjwt-api:0.11.1")
     runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.1")
