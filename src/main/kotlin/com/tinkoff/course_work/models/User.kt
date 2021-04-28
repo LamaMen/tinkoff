@@ -1,8 +1,30 @@
 package com.tinkoff.course_work.models
 
-data class User(
-    val id: Int?,
-    val login: String,
-    val name: String,
-    val password: String
-)
+import com.fasterxml.jackson.annotation.JsonIgnore
+import org.springframework.security.core.GrantedAuthority
+import org.springframework.security.core.authority.SimpleGrantedAuthority
+import org.springframework.security.core.userdetails.UserDetails
+
+class User(
+    private val id: Int?,
+//    private val login: String,
+    private val name: String,
+    @JsonIgnore
+    private val password: String
+) : UserDetails {
+
+    override fun getAuthorities(): MutableCollection<out GrantedAuthority> =
+        mutableListOf(SimpleGrantedAuthority(UserRole.ROLE_USER.name))
+
+    override fun getPassword() = password
+
+    override fun getUsername() = name
+
+    override fun isAccountNonExpired() = true
+
+    override fun isAccountNonLocked() = true
+
+    override fun isCredentialsNonExpired() = true
+
+    override fun isEnabled() = true
+}
