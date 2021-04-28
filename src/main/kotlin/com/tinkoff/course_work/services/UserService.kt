@@ -10,7 +10,7 @@ import reactor.core.publisher.Mono
 
 @Service
 class UserService(private val dao: UserDAO) : ReactiveUserDetailsService {
-//    suspend fun getUserByLogin(name: String) = dao.findByUsername(name)
+    suspend fun getUserByLogin(name: String) = dao.findByUsername(name)
 
     override fun findByUsername(username: String?): Mono<UserDetails> {
         val user = mono {

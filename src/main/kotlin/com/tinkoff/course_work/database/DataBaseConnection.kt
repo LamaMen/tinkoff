@@ -7,13 +7,13 @@ import org.springframework.context.annotation.Configuration
 
 @Configuration
 class DataBaseConnection {
-    @Value("\${database.url}")
+    @Value("\${spring.datasource.url}")
     private lateinit var databaseUrl: String
 
-    @Value("\${database.user}")
+    @Value("\${spring.datasource.username}")
     private lateinit var databaseUser: String
 
-    @Value("\${database.password}")
+    @Value("\${spring.datasource.password}")
     private lateinit var databasePassword: String
 
 
