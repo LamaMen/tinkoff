@@ -4,7 +4,7 @@ import kotlinx.coroutines.channels.produce
 import kotlinx.coroutines.delay
 import kotlin.random.Random
 
-class SalaryService {
+object SalaryService {
     @ExperimentalCoroutinesApi
     fun subscribeToSalary(employee: EmployeeWithSalary) {
         employee.salaryChanel = GlobalScope.produce {

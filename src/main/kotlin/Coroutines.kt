@@ -9,12 +9,11 @@ fun main() = runBlocking {
 
 @ExperimentalCoroutinesApi
 suspend fun subscribeToEvent() {
-    val salaryService = SalaryService()
 
     val employees = EmployeeService.getAllEmployees()
 
     for (employee in employees) {
-        salaryService.subscribeToSalary(employee)
+        SalaryService.subscribeToSalary(employee)
     }
 
     repeat(10) {
