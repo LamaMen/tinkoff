@@ -1,15 +1,12 @@
 package com.tinkoff.course_work.models
 
-import com.fasterxml.jackson.annotation.JsonIgnore
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails
 
 class User(
     private val id: Int?,
-//    private val login: String,
     private val name: String,
-    @JsonIgnore
     private val password: String
 ) : UserDetails {
 

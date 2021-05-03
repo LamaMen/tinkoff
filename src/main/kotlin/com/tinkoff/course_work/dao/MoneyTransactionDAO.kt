@@ -70,8 +70,8 @@ class MoneyTransactionDAO(private val database: Database) {
         it[user] = userId
     }
 
-    suspend fun <T> dbQuery(block: () -> T): T = withContext(Dispatchers.IO) {
-        transaction(database) { block() }
+    suspend fun <T> dbQuery(statement: Transaction.() -> T): T = withContext(Dispatchers.IO) {
+        transaction(database, statement)
     }
 }
 
