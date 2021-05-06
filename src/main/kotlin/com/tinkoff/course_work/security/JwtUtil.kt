@@ -1,6 +1,5 @@
 package com.tinkoff.course_work.security
 
-import com.tinkoff.course_work.models.User
 import com.tinkoff.course_work.models.UserRole
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
@@ -18,7 +17,7 @@ class JwtUtil {
     @Value("\${jwt.expiration}")
     private lateinit var expirationTime: String
 
-    fun createToken(user: User): String {
+    fun createToken(userId: Int?): String {
         val claims = HashMap<String, Any>()
         claims["role"] = listOf(UserRole.ROLE_USER)
 
@@ -28,7 +27,7 @@ class JwtUtil {
 
         return Jwts.builder()
             .setClaims(claims)
-            .setSubject(user.id.toString())
+            .setSubject(userId.toString())
             .setIssuedAt(currentDate)
             .setExpiration(expirationDate)
             .signWith(Keys.hmacShaKeyFor(secret.toByteArray()))

@@ -15,6 +15,14 @@ class UserController(private val service: UserService) {
     @PostMapping("/login")
     suspend fun login(@RequestBody user: User): ResponseEntity<String> {
         val token = service.authenticate(user)
-        return if (token != null) ResponseEntity.ok(token) else unauthorized
+        return getResponse(token)
     }
+
+    @PostMapping("/register")
+    suspend fun register(@RequestBody user: User): ResponseEntity<String> {
+        val token = service.register(user)
+        return getResponse(token)
+    }
+
+    private fun getResponse(token: String?) = if (token != null) ResponseEntity.ok(token) else unauthorized
 }

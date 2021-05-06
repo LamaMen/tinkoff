@@ -30,10 +30,18 @@ class UserService(
         val userFromDB = getUserByUsername(user.username)
 
         return if (userFromDB != null && userFromDB.password == user.password) {
-            jwt.createToken(userFromDB)
+            jwt.createToken(userFromDB.id)
         } else {
             null
         }
+    }
+
+    suspend fun register(user: User): String? {
+        val userFromDB = getUserByUsername(user.username)
+        if (userFromDB != null) return null
+
+        val createdUser = dao.addUser(user)
+        return jwt.createToken(createdUser)
     }
 
     fun decodeId(principal: Principal) = try {
@@ -41,7 +49,6 @@ class UserService(
     } catch (e: NumberFormatException) {
         throw NoSuchUserException()
     }
-
 
     private suspend fun getUserByUsername(name: String) = dao.findByUsername(name)
 }

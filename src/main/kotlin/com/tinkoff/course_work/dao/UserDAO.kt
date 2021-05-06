@@ -4,11 +4,8 @@ import com.tinkoff.course_work.database.UserTable
 import com.tinkoff.course_work.models.User
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.Op
-import org.jetbrains.exposed.sql.ResultRow
+import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
-import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.springframework.stereotype.Repository
 
@@ -16,6 +13,13 @@ import org.springframework.stereotype.Repository
 class UserDAO(private val database: Database) {
     suspend fun findByUsername(name: String): User? =
         getUserCollectionFromDb(UserTable.name eq name).firstOrNull()
+
+    suspend fun addUser(user: User): Int = dbQuery {
+        UserTable.insertAndGetId {
+            it[name] = user.username
+            it[password] = user.password
+        }.value
+    }
 
     private fun extractUser(row: ResultRow) = User(
         row[UserTable.id].value,

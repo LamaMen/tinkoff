@@ -41,7 +41,7 @@ class WebSecurityConfig(
             .authenticationManager(authenticationManager)
             .securityContextRepository(securityContextRepository)
             .authorizeExchange()
-            .pathMatchers("/login").permitAll()
+            .pathMatchers("/login", "/register").permitAll()
             .anyExchange().authenticated()
             .and()
             .build()
