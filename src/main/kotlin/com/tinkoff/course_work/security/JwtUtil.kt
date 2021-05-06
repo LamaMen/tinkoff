@@ -17,7 +17,7 @@ class JwtUtil {
     @Value("\${jwt.expiration}")
     private lateinit var expirationTime: String
 
-    fun createToken(userId: Int?): String {
+    fun createToken(userId: String?): String {
         val claims = HashMap<String, Any>()
         claims["role"] = listOf(UserRole.ROLE_USER)
 
@@ -27,7 +27,7 @@ class JwtUtil {
 
         return Jwts.builder()
             .setClaims(claims)
-            .setSubject(userId.toString())
+            .setSubject(userId)
             .setIssuedAt(currentDate)
             .setExpiration(expirationDate)
             .signWith(Keys.hmacShaKeyFor(secret.toByteArray()))

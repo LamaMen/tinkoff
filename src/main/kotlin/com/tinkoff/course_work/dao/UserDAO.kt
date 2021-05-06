@@ -14,15 +14,15 @@ class UserDAO(private val database: Database) {
     suspend fun findByUsername(name: String): User? =
         getUserCollectionFromDb(UserTable.name eq name).firstOrNull()
 
-    suspend fun addUser(user: User): Int = dbQuery {
+    suspend fun addUser(username: String, password: String): String = dbQuery {
         UserTable.insertAndGetId {
-            it[name] = user.username
-            it[password] = user.password
-        }.value
+            it[this.name] = username
+            it[this.password] = password
+        }.value.toString()
     }
 
     private fun extractUser(row: ResultRow) = User(
-        row[UserTable.id].value,
+        row[UserTable.id].value.toString(),
         row[UserTable.name],
         row[UserTable.password],
     )

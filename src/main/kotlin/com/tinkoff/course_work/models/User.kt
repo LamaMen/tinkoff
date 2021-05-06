@@ -7,7 +7,7 @@ import org.springframework.security.core.userdetails.UserDetails
 
 class User(
     @JsonIgnore
-    val id: Int?,
+    val id: String?,
     private val name: String,
     private val password: String
 ) : UserDetails {

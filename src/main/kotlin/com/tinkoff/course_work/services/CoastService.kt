@@ -7,30 +7,30 @@ import org.springframework.stereotype.Service
 
 @Service
 class CoastService(private val dao: MoneyTransactionDAO) {
-    suspend fun getAllCoasts(userId: Int): List<Coast> {
+    suspend fun getAllCoasts(userId: String): List<Coast> {
         return dao.getAllTransactionsByUser(userId)
             .filter(MoneyTransaction::isCoast)
             .map(::executeCoast)
     }
 
-    suspend fun getById(id: Int, userId: Int): Coast {
+    suspend fun getById(id: Int, userId: String): Coast {
         return executeCoast(dao.getTransactionById(id, userId))
     }
 
-    suspend fun addCoastNow(coast: Coast, userId: Int): Coast {
+    suspend fun addCoastNow(coast: Coast, userId: String): Coast {
         val transaction = MoneyTransaction(coast)
         val coastId = dao.addTransaction(transaction, userId)
         return Coast(coastId, transaction)
     }
 
-    suspend fun updateCoast(id: Int, coast: Coast, userId: Int): Coast {
+    suspend fun updateCoast(id: Int, coast: Coast, userId: String): Coast {
         val transactionFromDB = dao.getTransactionById(id, userId)
         val savedTransaction = MoneyTransaction(coast, transactionFromDB)
         dao.updateTransaction(savedTransaction, userId)
         return Coast(savedTransaction)
     }
 
-    suspend fun deleteCoastById(id: Int, userId: Int) {
+    suspend fun deleteCoastById(id: Int, userId: String) {
         dao.deleteTransactionById(id, userId)
     }
 

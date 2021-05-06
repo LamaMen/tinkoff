@@ -7,6 +7,7 @@ import com.tinkoff.course_work.security.JwtUtil
 import kotlinx.coroutines.reactor.mono
 import org.springframework.security.core.userdetails.ReactiveUserDetailsService
 import org.springframework.security.core.userdetails.UserDetails
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
 import java.security.Principal
@@ -14,8 +15,10 @@ import java.security.Principal
 @Service
 class UserService(
     private val dao: UserDAO,
-    private val jwt: JwtUtil
+    private val jwt: JwtUtil,
+    private val encoder: PasswordEncoder,
 ) : ReactiveUserDetailsService {
+
 
     override fun findByUsername(username: String?): Mono<UserDetails> {
         val user = mono {
@@ -28,9 +31,8 @@ class UserService(
 
     suspend fun authenticate(user: User): String? {
         val userFromDB = getUserByUsername(user.username)
-
-        return if (userFromDB != null && userFromDB.password == user.password) {
-            jwt.createToken(userFromDB.id)
+        return if (userFromDB != null && encoder.matches(user.password, userFromDB.password)) {
+            jwt.createToken(userFromDB.id.toString())
         } else {
             null
         }
@@ -40,12 +42,13 @@ class UserService(
         val userFromDB = getUserByUsername(user.username)
         if (userFromDB != null) return null
 
-        val createdUser = dao.addUser(user)
+        val createdUser = dao.addUser(user.username, encoder.encode(user.password))
         return jwt.createToken(createdUser)
     }
 
     fun decodeId(principal: Principal) = try {
-        principal.name.toInt()
+//        principal.name.toInt()
+        principal.name
     } catch (e: NumberFormatException) {
         throw NoSuchUserException()
     }

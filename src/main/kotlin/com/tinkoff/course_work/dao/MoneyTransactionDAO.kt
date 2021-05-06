@@ -10,31 +10,34 @@ import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.statements.UpdateBuilder
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.springframework.stereotype.Repository
+import java.util.*
 
 @Repository
 class MoneyTransactionDAO(private val database: Database) {
-    suspend fun getTransactionById(id: Int?, userId: Int): MoneyTransaction {
+    suspend fun getTransactionById(id: Int?, userId: String): MoneyTransaction {
         return getCollectionFromDB(checkTransactionId(id, userId)).firstOrNull() ?: throw TransactionNotFoundException()
     }
 
-    suspend fun getAllTransactionsByUser(userId: Int): List<MoneyTransaction> =
-        getCollectionFromDB(MoneyTransactionTable.user eq userId)
+    suspend fun getAllTransactionsByUser(userId: String): List<MoneyTransaction> =
+        getCollectionFromDB(MoneyTransactionTable.user eq UUID.fromString(userId))
 
-    suspend fun addTransaction(transaction: MoneyTransaction, userId: Int): Int = dbQuery {
+    suspend fun addTransaction(transaction: MoneyTransaction, userId: String): Int = dbQuery {
         MoneyTransactionTable.insertAndGetId {
             setValues(it, transaction, userId)
         }.value
     }
 
-    suspend fun updateTransaction(transaction: MoneyTransaction, userId: Int) = dbQuery {
-        MoneyTransactionTable.update({ checkTransactionId(transaction.id, userId) }) {
-            setValues(it, transaction, userId)
+    suspend fun updateTransaction(transaction: MoneyTransaction, userId: String) =
+        dbQuery {
+            MoneyTransactionTable.update({ checkTransactionId(transaction.id, userId) }) {
+                setValues(it, transaction, userId)
+            }
         }
-    }
 
-    suspend fun deleteTransactionById(id: Int, userId: Int) = dbQuery {
-        MoneyTransactionTable.deleteWhere { checkTransactionId(id, userId) }
-    }
+    suspend fun deleteTransactionById(id: Int, userId: String) =
+        dbQuery {
+            MoneyTransactionTable.deleteWhere { checkTransactionId(id, userId) }
+        }
 
     private suspend fun getCollectionFromDB(condition: Op<Boolean>) = dbQuery {
         MoneyTransactionTable
@@ -42,11 +45,11 @@ class MoneyTransactionDAO(private val database: Database) {
             .map(::extractMoneyTransaction)
     }
 
-    private fun checkTransactionId(transactionId: Int?, userId: Int): Op<Boolean> {
+    private fun checkTransactionId(transactionId: Int?, userId: String): Op<Boolean> {
         if (transactionId == null) {
             throw TransactionNotFoundException()
         } else {
-            return MoneyTransactionTable.id eq transactionId and (MoneyTransactionTable.user eq userId)
+            return MoneyTransactionTable.id eq transactionId and (MoneyTransactionTable.user eq UUID.fromString(userId))
         }
     }
 
@@ -61,13 +64,13 @@ class MoneyTransactionDAO(private val database: Database) {
     private fun MoneyTransactionTable.setValues(
         it: UpdateBuilder<Int>,
         transaction: MoneyTransaction,
-        userId: Int
+        userId: String
     ) {
         it[amount] = transaction.amount
         it[title] = transaction.title
         it[date] = transaction.date
         it[isCoast] = transaction.isCoast
-        it[user] = userId
+        it[user] = UUID.fromString(userId)
     }
 
     suspend fun <T> dbQuery(statement: Transaction.() -> T): T = withContext(Dispatchers.IO) {
