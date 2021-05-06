@@ -28,7 +28,7 @@ class JwtUtil {
 
         return Jwts.builder()
             .setClaims(claims)
-            .setSubject(user.username)
+            .setSubject(user.id.toString())
             .setIssuedAt(currentDate)
             .setExpiration(expirationDate)
             .signWith(Keys.hmacShaKeyFor(secret.toByteArray()))

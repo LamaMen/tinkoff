@@ -1,7 +1,6 @@
 package com.tinkoff.course_work.dao
 
 import com.tinkoff.course_work.database.UserTable
-import com.tinkoff.course_work.exceptions.NoSuchUserException
 import com.tinkoff.course_work.models.User
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -15,8 +14,8 @@ import org.springframework.stereotype.Repository
 
 @Repository
 class UserDAO(private val database: Database) {
-    suspend fun findByUsername(name: String): User =
-        getUserCollectionFromDb(UserTable.name eq name).firstOrNull() ?: throw NoSuchUserException()
+    suspend fun findByUsername(name: String): User? =
+        getUserCollectionFromDb(UserTable.name eq name).firstOrNull()
 
     private fun extractUser(row: ResultRow) = User(
         row[UserTable.id].value,
