@@ -10,11 +10,11 @@ class CoastService(private val dao: MoneyTransactionDAO) {
     suspend fun getAllCoasts(userId: String): List<Coast> {
         return dao.getAllTransactionsByUser(userId)
             .filter(MoneyTransaction::isCoast)
-            .map(::executeCoast)
+            .map(Coast::invoke)
     }
 
     suspend fun getById(id: Int, userId: String): Coast {
-        return executeCoast(dao.getTransactionById(id, userId))
+        return Coast(dao.getTransactionById(id, true, userId))
     }
 
     suspend fun addCoastNow(coast: Coast, userId: String): Coast {
@@ -24,17 +24,13 @@ class CoastService(private val dao: MoneyTransactionDAO) {
     }
 
     suspend fun updateCoast(id: Int, coast: Coast, userId: String): Coast {
-        val transactionFromDB = dao.getTransactionById(id, userId)
+        val transactionFromDB = dao.getTransactionById(id, true, userId)
         val savedTransaction = MoneyTransaction(coast, transactionFromDB)
         dao.updateTransaction(savedTransaction, userId)
         return Coast(savedTransaction)
     }
 
     suspend fun deleteCoastById(id: Int, userId: String) {
-        dao.deleteTransactionById(id, userId)
-    }
-
-    private fun executeCoast(transaction: MoneyTransaction): Coast {
-        return Coast(transaction.id, transaction.title, transaction.amount, transaction.date)
+        dao.deleteTransactionById(id, true, userId)
     }
 }

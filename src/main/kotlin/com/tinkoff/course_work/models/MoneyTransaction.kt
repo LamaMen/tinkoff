@@ -22,5 +22,18 @@ data class MoneyTransaction(
             val date = coast.date ?: LocalDateTime.now()
             return MoneyTransaction(id, coast.title, coast.amount, date, true)
         }
+
+        operator fun invoke(income: Income, parentTransaction: MoneyTransaction): MoneyTransaction {
+            return MoneyTransaction(parentTransaction.id, income.title, income.amount, parentTransaction.date, false)
+        }
+
+        operator fun invoke(income: Income): MoneyTransaction {
+            return invoke(income.id, income)
+        }
+
+        operator fun invoke(id: Int?, income: Income): MoneyTransaction {
+            val date = income.date ?: LocalDateTime.now()
+            return MoneyTransaction(id, income.title, income.amount, date, false)
+        }
     }
 }

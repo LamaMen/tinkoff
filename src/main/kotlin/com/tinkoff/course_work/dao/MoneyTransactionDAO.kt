@@ -14,8 +14,9 @@ import java.util.*
 
 @Repository
 class MoneyTransactionDAO(private val database: Database) {
-    suspend fun getTransactionById(id: Int?, userId: String): MoneyTransaction {
-        return getCollectionFromDB(checkTransactionId(id, userId)).firstOrNull() ?: throw TransactionNotFoundException()
+    suspend fun getTransactionById(id: Int?, isCoast: Boolean, userId: String): MoneyTransaction {
+        return getCollectionFromDB(checkTransactionId(id, isCoast, userId)).firstOrNull()
+            ?: throw TransactionNotFoundException()
     }
 
     suspend fun getAllTransactionsByUser(userId: String): List<MoneyTransaction> =
@@ -29,14 +30,14 @@ class MoneyTransactionDAO(private val database: Database) {
 
     suspend fun updateTransaction(transaction: MoneyTransaction, userId: String) =
         dbQuery {
-            MoneyTransactionTable.update({ checkTransactionId(transaction.id, userId) }) {
+            MoneyTransactionTable.update({ checkTransactionId(transaction.id, transaction.isCoast, userId) }) {
                 setValues(it, transaction, userId)
             }
         }
 
-    suspend fun deleteTransactionById(id: Int, userId: String) =
+    suspend fun deleteTransactionById(id: Int, isCoast: Boolean, userId: String) =
         dbQuery {
-            MoneyTransactionTable.deleteWhere { checkTransactionId(id, userId) }
+            MoneyTransactionTable.deleteWhere { checkTransactionId(id, isCoast, userId) }
         }
 
     private suspend fun getCollectionFromDB(condition: Op<Boolean>) = dbQuery {
@@ -45,11 +46,13 @@ class MoneyTransactionDAO(private val database: Database) {
             .map(::extractMoneyTransaction)
     }
 
-    private fun checkTransactionId(transactionId: Int?, userId: String): Op<Boolean> {
+    private fun checkTransactionId(transactionId: Int?, isCoast: Boolean, userId: String): Op<Boolean> {
         if (transactionId == null) {
             throw TransactionNotFoundException()
         } else {
-            return MoneyTransactionTable.id eq transactionId and (MoneyTransactionTable.user eq UUID.fromString(userId))
+            return MoneyTransactionTable.id eq transactionId and
+                    (MoneyTransactionTable.user eq UUID.fromString(userId)) and
+                    (MoneyTransactionTable.isCoast eq isCoast)
         }
     }
 

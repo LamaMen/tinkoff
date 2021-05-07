@@ -10,7 +10,6 @@ import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import reactor.core.publisher.Mono
-import java.security.Principal
 
 @Service
 class UserService(
@@ -44,13 +43,6 @@ class UserService(
 
         val createdUser = dao.addUser(user.username, encoder.encode(user.password))
         return jwt.createToken(createdUser)
-    }
-
-    fun decodeId(principal: Principal) = try {
-//        principal.name.toInt()
-        principal.name
-    } catch (e: NumberFormatException) {
-        throw NoSuchUserException()
     }
 
     private suspend fun getUserByUsername(name: String) = dao.findByUsername(name)
