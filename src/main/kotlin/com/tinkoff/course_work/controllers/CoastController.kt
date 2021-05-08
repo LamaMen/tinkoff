@@ -28,10 +28,10 @@ class CoastController(private val coastService: CoastService) {
     }
 
     @PostMapping
-    suspend fun addCoastNow(principal: Principal, @RequestBody coast: Coast): Coast {
+    suspend fun addCoast(principal: Principal, @RequestBody coast: Coast): Coast {
         logger.info("Добавили расход ${coast.title}")
         val userId = principal.name
-        return coastService.addCoastNow(coast, userId)
+        return coastService.addCoast(coast, userId)
     }
 
     @PutMapping("/{id}")

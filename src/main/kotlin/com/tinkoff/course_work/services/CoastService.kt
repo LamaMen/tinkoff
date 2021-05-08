@@ -17,7 +17,7 @@ class CoastService(private val dao: MoneyTransactionDAO) {
         return Coast(dao.getTransactionById(id, true, userId))
     }
 
-    suspend fun addCoastNow(coast: Coast, userId: String): Coast {
+    suspend fun addCoast(coast: Coast, userId: String): Coast {
         val transaction = MoneyTransaction(coast)
         val coastId = dao.addTransaction(transaction, userId)
         return Coast(coastId, transaction)

@@ -7,7 +7,7 @@ data class Coast(
     val id: Int?,
     val title: String,
     val amount: Long,
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd MMMM yyyy HH:mm")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "d MMMM yyyy HH:mm")
     val date: LocalDateTime?
 ) {
     companion object {
