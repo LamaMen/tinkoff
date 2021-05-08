@@ -1,6 +1,6 @@
 package com.tinkoff.course_work.security
 
-import com.tinkoff.course_work.exceptions.NoSuchUserException
+import com.tinkoff.course_work.exceptions.AuthorizationException
 import org.springframework.security.authentication.ReactiveAuthenticationManager
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.security.core.Authentication
@@ -12,7 +12,7 @@ import reactor.core.publisher.Mono
 class AuthenticationManager(private val jwt: JwtUtil) : ReactiveAuthenticationManager {
 
     override fun authenticate(authentication: Authentication?): Mono<Authentication> {
-        authentication ?: throw NoSuchUserException()
+        authentication ?: throw AuthorizationException()
         val token = authentication.credentials.toString()
         return try {
             val username = jwt.extractUsername(token)

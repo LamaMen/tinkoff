@@ -1,7 +1,7 @@
 package com.tinkoff.course_work.services
 
 import com.tinkoff.course_work.dao.UserDAO
-import com.tinkoff.course_work.exceptions.NoSuchUserException
+import com.tinkoff.course_work.exceptions.AuthorizationException
 import com.tinkoff.course_work.models.User
 import com.tinkoff.course_work.security.JwtUtil
 import kotlinx.coroutines.reactor.mono
@@ -21,25 +21,25 @@ class UserService(
 
     override fun findByUsername(username: String?): Mono<UserDetails> {
         val user = mono {
-            username ?: throw NoSuchUserException()
+            username ?: throw AuthorizationException()
             getUserByUsername(username)
         }
 
         return user.cast(UserDetails::class.java)
     }
 
-    suspend fun authenticate(user: User): String? {
+    suspend fun authenticate(user: User): String {
         val userFromDB = getUserByUsername(user.username)
-        return if (userFromDB != null && encoder.matches(user.password, userFromDB.password)) {
-            jwt.createToken(userFromDB.id.toString())
-        } else {
-            null
+        if (userFromDB == null || !encoder.matches(user.password, userFromDB.password)) {
+            throw AuthorizationException()
         }
+
+        return jwt.createToken(userFromDB.id.toString())
     }
 
-    suspend fun register(user: User): String? {
+    suspend fun register(user: User): String {
         val userFromDB = getUserByUsername(user.username)
-        if (userFromDB != null) return null
+        if (userFromDB != null) throw AuthorizationException()
 
         val createdUser = dao.addUser(user.username, encoder.encode(user.password))
         return jwt.createToken(createdUser)
