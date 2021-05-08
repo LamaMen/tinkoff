@@ -1,7 +1,7 @@
 package com.tinkoff.course_work.dao
 
 import com.tinkoff.course_work.database.UserTable
-import com.tinkoff.course_work.models.User
+import com.tinkoff.course_work.models.domain.User
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.jetbrains.exposed.sql.*

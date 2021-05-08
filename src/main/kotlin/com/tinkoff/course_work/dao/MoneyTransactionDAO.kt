@@ -2,7 +2,7 @@ package com.tinkoff.course_work.dao
 
 import com.tinkoff.course_work.database.MoneyTransactionTable
 import com.tinkoff.course_work.exceptions.TransactionNotFoundException
-import com.tinkoff.course_work.models.MoneyTransaction
+import com.tinkoff.course_work.models.domain.MoneyTransaction
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.jetbrains.exposed.sql.*

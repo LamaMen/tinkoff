@@ -1,4 +1,4 @@
-package com.tinkoff.course_work.models
+package com.tinkoff.course_work.models.domain
 
 import com.fasterxml.jackson.annotation.JsonIgnore
 import org.springframework.security.core.GrantedAuthority

@@ -2,7 +2,7 @@ package com.tinkoff.course_work.services
 
 import com.tinkoff.course_work.dao.UserDAO
 import com.tinkoff.course_work.exceptions.AuthorizationException
-import com.tinkoff.course_work.models.User
+import com.tinkoff.course_work.models.domain.User
 import com.tinkoff.course_work.security.JwtUtil
 import kotlinx.coroutines.reactor.mono
 import org.springframework.security.core.userdetails.ReactiveUserDetailsService

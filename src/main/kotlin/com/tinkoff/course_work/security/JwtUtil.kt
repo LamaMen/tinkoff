@@ -1,6 +1,6 @@
 package com.tinkoff.course_work.security
 
-import com.tinkoff.course_work.models.UserRole
+import com.tinkoff.course_work.models.domain.UserRole
 import io.jsonwebtoken.Claims
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Keys

@@ -1,7 +1,7 @@
 package com.tinkoff.course_work.controllers
 
-import com.tinkoff.course_work.models.Token
-import com.tinkoff.course_work.models.User
+import com.tinkoff.course_work.models.domain.User
+import com.tinkoff.course_work.models.json.Token
 import com.tinkoff.course_work.services.UserService
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
