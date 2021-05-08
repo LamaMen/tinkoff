@@ -14,6 +14,7 @@ import java.util.*
 
 @Repository
 class MoneyTransactionDAO(private val database: Database) {
+
     suspend fun getTransactionById(id: Int?, isCoast: Boolean, userId: String): MoneyTransaction {
         return getCollectionFromDB(checkTransactionId(id, isCoast, userId)).firstOrNull()
             ?: throw TransactionNotFoundException()
@@ -35,10 +36,12 @@ class MoneyTransactionDAO(private val database: Database) {
             }
         }
 
-    suspend fun deleteTransactionById(id: Int, isCoast: Boolean, userId: String) =
+    suspend fun deleteTransactionById(id: Int, isCoast: Boolean, userId: String) {
         dbQuery {
-            MoneyTransactionTable.deleteWhere { checkTransactionId(id, isCoast, userId) }
+            val status = MoneyTransactionTable.deleteWhere { checkTransactionId(id, isCoast, userId) }
+            if (status == 0) throw TransactionNotFoundException()
         }
+    }
 
     private suspend fun getCollectionFromDB(condition: Op<Boolean>) = dbQuery {
         MoneyTransactionTable
