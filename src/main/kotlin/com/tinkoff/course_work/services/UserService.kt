@@ -18,7 +18,6 @@ class UserService(
     private val encoder: PasswordEncoder,
 ) : ReactiveUserDetailsService {
 
-
     override fun findByUsername(username: String?): Mono<UserDetails> {
         val user = mono {
             username ?: throw AuthorizationException()
