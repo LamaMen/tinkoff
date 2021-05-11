@@ -5,14 +5,10 @@ import com.tinkoff.course_work.models.json.Coast
 import com.tinkoff.course_work.models.json.Income
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
 import java.time.LocalDateTime
 
-@SpringBootTest
-class BasicJsonFactoryTest(
-    @Autowired val factory: BasicJsonFactory
-) {
+class BasicJsonFactoryTest {
+    private val factory: BasicJsonFactory = BasicJsonFactory()
 
     @Test
     fun `build coast by transaction without id`() {
@@ -121,5 +117,4 @@ class BasicJsonFactoryTest(
         val transaction = MoneyTransaction(null, "transaction", 10, LocalDateTime.now(), true)
         assertThrows(ClassCastException::class.java) { val income = factory.build<Income>(transaction) }
     }
-
 }

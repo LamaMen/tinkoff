@@ -5,14 +5,10 @@ import com.tinkoff.course_work.models.json.Coast
 import com.tinkoff.course_work.models.json.Income
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.boot.test.context.SpringBootTest
 import java.time.LocalDateTime
 
-@SpringBootTest
-class MoneyTransactionFactoryTest(
-    @Autowired val factory: MoneyTransactionFactory
-) {
+class MoneyTransactionFactoryTest {
+    private val factory: MoneyTransactionFactory = MoneyTransactionFactory()
 
     @Test
     fun `build transaction by parent transaction and coast without id`() {
