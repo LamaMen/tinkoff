@@ -19,11 +19,11 @@ import org.springframework.security.crypto.password.NoOpPasswordEncoder
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class UserServiceTest {
     private val encoder = NoOpPasswordEncoder.getInstance()
-    private val testUser = User("1", "admin", encoder.encode("admin"))
     private lateinit var dao: UserDAO
     private lateinit var jwt: JwtUtil
-
     private lateinit var service: UserService
+
+    private val testUser = User("1", "admin", encoder.encode("admin"))
 
     @BeforeAll
     internal fun beforeAll() {
