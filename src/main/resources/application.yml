@@ -3,15 +3,15 @@ server:
 
 spring:
   flyway:
-    url: jdbc:postgresql://localhost:5500/finances
-    user: ilia
-    password: gjkbnt[
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5500/finances}
+    user: ${SPRING_DATASOURCE_USERNAME:ilia}
+    password: ${SPRING_DATASOURCE_PASSWORD:gjkbnt[}
 
   datasource:
-    url: jdbc:postgresql://localhost:5500/finances
-    username: ilia
-    password: gjkbnt[
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5500/finances}
+    username: ${SPRING_DATASOURCE_USERNAME:ilia}
+    password: ${SPRING_DATASOURCE_PASSWORD:gjkbnt[}
 
 jwt:
-  secret: dcxmbyzswzteidminpulqgohznpbgpjn
+  secret: ${SECRET_KEY}
   expiration: 86400
