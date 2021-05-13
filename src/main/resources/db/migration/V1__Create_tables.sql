@@ -7,9 +7,6 @@ create table user_account
     password varchar(64)
 );
 
-alter table user_account
-    owner to ilia;
-
 create table money_transaction
 (
     id       serial primary key,
@@ -21,6 +18,3 @@ create table money_transaction
         constraint foreign_key_for_user_account
             references user_account
 );
-
-alter table money_transaction
-    owner to ilia;
