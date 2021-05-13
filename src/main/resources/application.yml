@@ -1,0 +1,17 @@
+server:
+  port: 80
+
+spring:
+  flyway:
+    url: jdbc:postgresql://localhost:5500/finances
+    user: ilia
+    password: gjkbnt[
+
+  datasource:
+    url: jdbc:postgresql://localhost:5500/finances
+    username: ilia
+    password: gjkbnt[
+
+jwt:
+  secret: dcxmbyzswzteidminpulqgohznpbgpjn
+  expiration: 86400
