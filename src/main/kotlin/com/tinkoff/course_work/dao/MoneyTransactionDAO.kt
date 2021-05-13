@@ -29,12 +29,16 @@ class MoneyTransactionDAO(private val database: Database) {
         }.value
     }
 
-    suspend fun updateTransaction(transaction: MoneyTransaction, userId: String) =
+    suspend fun updateTransaction(transaction: MoneyTransaction, userId: String) {
+        getCollectionFromDB(checkTransactionId(transaction.id, transaction.isCoast, userId)).firstOrNull()
+            ?: throw TransactionNotFoundException()
+
         dbQuery {
             MoneyTransactionTable.update({ checkTransactionId(transaction.id, transaction.isCoast, userId) }) {
                 setValues(it, transaction, userId)
             }
         }
+    }
 
     suspend fun deleteTransactionById(id: Int, isCoast: Boolean, userId: String) {
         dbQuery {
