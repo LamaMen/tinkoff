@@ -3,14 +3,14 @@ server:
 
 spring:
   flyway:
-    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5500/finances}
-    user: ${SPRING_DATASOURCE_USERNAME:ilia}
-    password: ${SPRING_DATASOURCE_PASSWORD:gjkbnt[}
+    url: ${JDBC_DATASOURCE_URL}
+    user: ${JDBC_DATASOURCE_USERNAME}
+    password: ${JDBC_DATASOURCE_PASSWORD}
 
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5500/finances}
-    username: ${SPRING_DATASOURCE_USERNAME:ilia}
-    password: ${SPRING_DATASOURCE_PASSWORD:gjkbnt[}
+    url: ${JDBC_DATASOURCE_URL}
+    username: ${JDBC_DATASOURCE_USERNAME}
+    password: ${JDBC_DATASOURCE_PASSWORD}
 
 jwt:
   secret: ${SECRET_KEY}
