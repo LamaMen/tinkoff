@@ -5,6 +5,7 @@ import com.tinkoff.course_work.exceptions.AuthorizationException
 import com.tinkoff.course_work.models.domain.User
 import com.tinkoff.course_work.security.JwtUtil
 import kotlinx.coroutines.reactor.mono
+import org.slf4j.LoggerFactory
 import org.springframework.security.core.userdetails.ReactiveUserDetailsService
 import org.springframework.security.core.userdetails.UserDetails
 import org.springframework.security.crypto.password.PasswordEncoder
@@ -17,6 +18,7 @@ class UserService(
     private val jwt: JwtUtil,
     private val encoder: PasswordEncoder,
 ) : ReactiveUserDetailsService {
+    private val logger = LoggerFactory.getLogger(UserService::class.java)
 
     override fun findByUsername(username: String?): Mono<UserDetails> {
         val user = mono {
@@ -33,6 +35,7 @@ class UserService(
             throw AuthorizationException()
         }
 
+        logger.info("User ${user.username} signed in")
         return jwt.createToken(userFromDB.id.toString())
     }
 
@@ -41,6 +44,7 @@ class UserService(
         if (userFromDB != null) throw AuthorizationException()
 
         val createdUser = dao.addUser(user.username, encoder.encode(user.password))
+        logger.info("User ${user.username} registered")
         return jwt.createToken(createdUser)
     }
 

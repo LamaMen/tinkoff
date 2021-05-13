@@ -4,6 +4,7 @@ import com.tinkoff.course_work.dao.MoneyTransactionDAO
 import com.tinkoff.course_work.models.factory.BasicJsonFactory
 import com.tinkoff.course_work.models.factory.MoneyTransactionFactory
 import com.tinkoff.course_work.models.json.BasicJson
+import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Scope
 import org.springframework.stereotype.Service
 
@@ -14,16 +15,22 @@ class JsonService<T : BasicJson>(
     private val entityFactory: BasicJsonFactory,
     private val transactionFactory: MoneyTransactionFactory
 ) {
+    private val logger = LoggerFactory.getLogger(this::class.java)
     var isCoast: Boolean = true
 
     suspend fun getAll(userId: String): List<T> {
-        return dao.getAllTransactionsByUser(userId)
+        val jsons: List<T> = dao.getAllTransactionsByUser(userId)
             .filter { it.isCoast == isCoast }
             .map(entityFactory::build)
+
+        logger.info("Given ${jsons.size} ${if (isCoast) "coasts" else "incomes"} for user $userId")
+        return jsons
     }
 
     suspend fun getById(id: Int, userId: String): T {
-        return entityFactory.build(dao.getTransactionById(id, isCoast, userId))
+        val json: T = entityFactory.build(dao.getTransactionById(id, isCoast, userId))
+        logger.info("Given ${if (isCoast) "coast" else "income"} with ID=$id for user $userId")
+        return json
     }
 
     suspend fun add(json: T, userId: String): T {

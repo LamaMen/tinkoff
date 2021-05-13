@@ -9,41 +9,48 @@ import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.statements.UpdateBuilder
 import org.jetbrains.exposed.sql.transactions.transaction
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Repository
 import java.util.*
 
 @Repository
 class MoneyTransactionDAO(private val database: Database) {
+    private val logger = LoggerFactory.getLogger(MoneyTransactionDAO::class.java)
 
     suspend fun getTransactionById(id: Int?, isCoast: Boolean, userId: String): MoneyTransaction {
         return getCollectionFromDB(checkTransactionId(id, isCoast, userId)).firstOrNull()
-            ?: throw TransactionNotFoundException()
+            ?: throw TransactionNotFoundException(id)
     }
 
     suspend fun getAllTransactionsByUser(userId: String): List<MoneyTransaction> =
         getCollectionFromDB(MoneyTransactionTable.user eq UUID.fromString(userId))
 
     suspend fun addTransaction(transaction: MoneyTransaction, userId: String): Int = dbQuery {
-        MoneyTransactionTable.insertAndGetId {
+        val id = MoneyTransactionTable.insertAndGetId {
             setValues(it, transaction, userId)
         }.value
+
+        logger.info("Save transaction with ID=$id for user $userId")
+        return@dbQuery id
     }
 
     suspend fun updateTransaction(transaction: MoneyTransaction, userId: String) {
         getCollectionFromDB(checkTransactionId(transaction.id, transaction.isCoast, userId)).firstOrNull()
-            ?: throw TransactionNotFoundException()
+            ?: throw TransactionNotFoundException(transaction.id)
 
         dbQuery {
             MoneyTransactionTable.update({ checkTransactionId(transaction.id, transaction.isCoast, userId) }) {
                 setValues(it, transaction, userId)
             }
+            logger.info("Update transaction=$transaction for user $userId")
         }
     }
 
     suspend fun deleteTransactionById(id: Int, isCoast: Boolean, userId: String) {
         dbQuery {
             val status = MoneyTransactionTable.deleteWhere { checkTransactionId(id, isCoast, userId) }
-            if (status == 0) throw TransactionNotFoundException()
+            if (status == 0) throw TransactionNotFoundException(id)
+            else logger.info("Transaction with ID=$id deleted for user $userId")
         }
     }
 
@@ -55,7 +62,7 @@ class MoneyTransactionDAO(private val database: Database) {
 
     private fun checkTransactionId(transactionId: Int?, isCoast: Boolean, userId: String): Op<Boolean> {
         if (transactionId == null) {
-            throw TransactionNotFoundException()
+            throw TransactionNotFoundException(transactionId)
         } else {
             return MoneyTransactionTable.id eq transactionId and
                     (MoneyTransactionTable.user eq UUID.fromString(userId)) and
