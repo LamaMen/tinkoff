@@ -8,7 +8,9 @@ import com.tinkoff.course_work.models.factory.MoneyTransactionFactory
 import com.tinkoff.course_work.models.json.Coast
 import com.tinkoff.course_work.models.json.Income
 import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.mockk
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.BeforeAll
@@ -25,13 +27,14 @@ class JsonServiceTest {
     private lateinit var incomeService: JsonService<Income>
 
     private val userId = "1"
+    private val date = LocalDateTime.now()
     private val listCoast = mutableListOf(
-        MoneyTransaction(1, "", 1, LocalDateTime.MIN, true),
-        MoneyTransaction(2, "", 1, LocalDateTime.MIN, true),
-        MoneyTransaction(3, "", 1, LocalDateTime.MIN, true),
-        MoneyTransaction(4, "", 1, LocalDateTime.MIN, false),
-        MoneyTransaction(5, "", 1, LocalDateTime.MIN, false),
-        MoneyTransaction(6, "", 1, LocalDateTime.MIN, false),
+        MoneyTransaction(1, "", 1, date, true),
+        MoneyTransaction(2, "", 1, date, true),
+        MoneyTransaction(3, "", 1, date, true),
+        MoneyTransaction(4, "", 1, date, false),
+        MoneyTransaction(5, "", 1, date, false),
+        MoneyTransaction(6, "", 1, date, false),
     )
 
     @BeforeAll
@@ -62,7 +65,25 @@ class JsonServiceTest {
             } returns listCoast[3]
 
             coEvery { addTransaction(any(), userId) } returns 7
-            coEvery { updateTransaction(any(), userId) } returns 6
+
+            coEvery { updateTransaction(any(), any()) } throws TransactionNotFoundException()
+            coEvery {
+                updateTransaction(
+                    match {
+                        it.id in 1..3 && it.isCoast
+                    },
+                    userId
+                )
+            } returns Unit
+            coEvery {
+                updateTransaction(
+                    match {
+                        it.id in 4..6 && !it.isCoast
+                    },
+                    userId
+                )
+            } returns Unit
+
 
             coEvery { deleteTransactionById(any(), any(), any()) } throws TransactionNotFoundException()
             coEvery {
@@ -112,8 +133,8 @@ class JsonServiceTest {
 
     @Test
     fun `get coast by non-existent id`() {
-        assertThrows(TransactionNotFoundException::class.java) { runBlocking { coastService.getById(8, userId) } }
-        assertThrows(TransactionNotFoundException::class.java) { runBlocking { coastService.getById(4, userId) } }
+        assertThrowTransactionNotFoundException { coastService.getById(8, userId) }
+        assertThrowTransactionNotFoundException { coastService.getById(4, userId) }
     }
 
 
@@ -143,7 +164,123 @@ class JsonServiceTest {
 
     @Test
     fun `get income by non-existent id`() {
-        assertThrows(TransactionNotFoundException::class.java) { runBlocking { incomeService.getById(8, userId) } }
-        assertThrows(TransactionNotFoundException::class.java) { runBlocking { incomeService.getById(1, userId) } }
+        assertThrowTransactionNotFoundException { incomeService.getById(8, userId) }
+        assertThrowTransactionNotFoundException { incomeService.getById(1, userId) }
+    }
+
+    @Test
+    fun `add new coast with date`() = runBlocking {
+        val coast = Coast(null, "test", 1, date)
+        val newCoast = coastService.add(coast, userId)
+
+        assertNotNull(newCoast.id)
+        assertEquals(coast.title, newCoast.title)
+        assertEquals(coast.amount, newCoast.amount)
+        assertEquals(coast.date, newCoast.date)
+    }
+
+    @Test
+    fun `add new coast without date`() = runBlocking {
+        val coast = Coast(null, "test", 1, null)
+        val newCoast = coastService.add(coast, userId)
+
+        assertNotNull(newCoast.id)
+        assertEquals(coast.title, newCoast.title)
+        assertEquals(coast.amount, newCoast.amount)
+        assertNotNull(newCoast.date)
+    }
+
+    @Test
+    fun `add new income with date`() = runBlocking {
+        val income = Income(null, "test", 1, date)
+        val newIncome = incomeService.add(income, userId)
+
+        assertNotNull(newIncome.id)
+        assertEquals(income.title, newIncome.title)
+        assertEquals(income.amount, newIncome.amount)
+        assertEquals(income.date, newIncome.date)
+    }
+
+    @Test
+    fun `add new income without date`() = runBlocking {
+        val income = Income(null, "test", 1, null)
+        val newIncome = incomeService.add(income, userId)
+
+        assertNotNull(newIncome.id)
+        assertEquals(income.title, newIncome.title)
+        assertEquals(income.amount, newIncome.amount)
+        assertNotNull(newIncome.date)
+    }
+
+    @Test
+    fun `update exist coast`() = runBlocking {
+        val id = 1
+        val coast = Coast(id, "test", 1, date)
+        val newCoast = coastService.update(id, coast, userId)
+
+        assertNotNull(newCoast.id)
+        assertEquals(coast.title, newCoast.title)
+        assertEquals(coast.amount, newCoast.amount)
+        assertEquals(coast.date, newCoast.date)
+    }
+
+    @Test
+    fun `update non-exist coast`() {
+        val id = 9
+        val coast = Coast(id, "test", 1, date)
+        assertThrowTransactionNotFoundException { coastService.update(id, coast, userId) }
+    }
+
+    @Test
+    fun `update exist income`() = runBlocking {
+        val id = 4
+        val income = Income(id, "test", 1, date)
+        val newIncome = incomeService.update(id, income, userId)
+
+        assertNotNull(newIncome.id)
+        assertEquals(income.title, newIncome.title)
+        assertEquals(income.amount, newIncome.amount)
+        assertEquals(income.date, newIncome.date)
+    }
+
+    @Test
+    fun `update non-exist income`() {
+        val id = 9
+        val income = Income(id, "test", 1, date)
+        assertThrowTransactionNotFoundException { incomeService.update(id, income, userId) }
+    }
+
+    @Test
+    fun `delete exist coast`() = runBlocking {
+        val id = 1
+        coastService.deleteById(id, userId)
+        coVerify(exactly = 1) { dao.deleteTransactionById(id, true, userId) }
+    }
+
+    @Test
+    fun `delete non-exist coast`() {
+        val id = 5
+        assertThrowTransactionNotFoundException { coastService.deleteById(id, userId) }
+    }
+
+    @Test
+    fun `delete exist income`() = runBlocking {
+        val id = 4
+        incomeService.deleteById(id, userId)
+        coVerify(exactly = 1) { dao.deleteTransactionById(id, false, userId) }
+    }
+
+    @Test
+    fun `delete non-exist income`() {
+        val id = 1
+        assertThrowTransactionNotFoundException { incomeService.deleteById(id, userId) }
+    }
+
+    private fun assertThrowTransactionNotFoundException(block: suspend CoroutineScope.() -> Unit) {
+        assertThrows(TransactionNotFoundException::class.java) {
+            runBlocking {
+                block()
+            }
+        }
     }
 }
