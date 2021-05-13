@@ -3,14 +3,14 @@ server:
 
 spring:
   flyway:
-    url: ${JDBC_DATASOURCE_URL}
-    user: ${JDBC_DATASOURCE_USERNAME}
-    password: ${JDBC_DATASOURCE_PASSWORD}
+    url: ${JDBC_DATABASE_URL}
+    user: ${JDBC_DATABASE_USERNAME}
+    password: ${JDBC_DATABASE_PASSWORD}
 
   datasource:
-    url: ${JDBC_DATASOURCE_URL}
-    username: ${JDBC_DATASOURCE_USERNAME}
-    password: ${JDBC_DATASOURCE_PASSWORD}
+    url: ${JDBC_DATABASE_URL}
+    username: ${JDBC_DATABASE_USERNAME}
+    password: ${JDBC_DATABASE_PASSWORD}
 
 jwt:
   secret: ${SECRET_KEY}
