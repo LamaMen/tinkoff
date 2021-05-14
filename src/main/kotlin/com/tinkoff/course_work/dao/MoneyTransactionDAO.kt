@@ -27,8 +27,10 @@ class MoneyTransactionDAO(private val database: Database) {
         getCollectionFromDB(MoneyTransactionTable.user eq UUID.fromString(userId))
 
     suspend fun addTransaction(transaction: MoneyTransaction, userId: String): Int = dbQuery {
+        val categoryId = getCategoryFromTransaction(transaction)
+
         val id = MoneyTransactionTable.insertAndGetId {
-            setValues(it, transaction, userId)
+            setValues(it, transaction, categoryId, userId)
         }.value
 
         logger.info("Save transaction with ID=$id for user $userId")
@@ -40,8 +42,10 @@ class MoneyTransactionDAO(private val database: Database) {
             ?: throw TransactionNotFoundException(transaction.id)
 
         dbQuery {
+            val categoryId = getCategoryFromTransaction(transaction)
+
             MoneyTransactionTable.update({ checkTransactionId(transaction.id, transaction.isCoast, userId) }) {
-                setValues(it, transaction, userId)
+                setValues(it, transaction, categoryId, userId)
             }
             logger.info("Update transaction=$transaction for user $userId")
         }
@@ -87,6 +91,7 @@ class MoneyTransactionDAO(private val database: Database) {
     private fun MoneyTransactionTable.setValues(
         it: UpdateBuilder<Int>,
         transaction: MoneyTransaction,
+        categoryId: Int,
         userId: String
     ) {
         it[amount] = transaction.amount
@@ -94,6 +99,16 @@ class MoneyTransactionDAO(private val database: Database) {
         it[date] = transaction.date
         it[isCoast] = transaction.isCoast
         it[user] = UUID.fromString(userId)
+        it[category] = categoryId
+    }
+
+    private fun getCategoryFromTransaction(transaction: MoneyTransaction): Int {
+        val category = transaction.category ?: "Other"
+
+        return CategoryTable
+            .select { CategoryTable.name eq category }
+            .map { it[CategoryTable.id] }
+            .firstOrNull()?.value ?: 10
     }
 
     suspend fun <T> dbQuery(statement: Transaction.() -> T): T = withContext(Dispatchers.IO) {
