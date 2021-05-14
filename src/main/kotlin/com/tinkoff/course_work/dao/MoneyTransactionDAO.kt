@@ -1,5 +1,6 @@
 package com.tinkoff.course_work.dao
 
+import com.tinkoff.course_work.database.CategoryTable
 import com.tinkoff.course_work.database.MoneyTransactionTable
 import com.tinkoff.course_work.exceptions.TransactionNotFoundException
 import com.tinkoff.course_work.models.domain.MoneyTransaction
@@ -55,7 +56,11 @@ class MoneyTransactionDAO(private val database: Database) {
     }
 
     private suspend fun getCollectionFromDB(condition: Op<Boolean>) = dbQuery {
-        MoneyTransactionTable
+        MoneyTransactionTable.join(
+            CategoryTable,
+            JoinType.INNER,
+            additionalConstraint = { MoneyTransactionTable.category eq CategoryTable.id }
+        )
             .select { condition }
             .map(::extractMoneyTransaction)
     }
@@ -75,7 +80,8 @@ class MoneyTransactionDAO(private val database: Database) {
         row[MoneyTransactionTable.title],
         row[MoneyTransactionTable.amount],
         row[MoneyTransactionTable.date],
-        row[MoneyTransactionTable.isCoast]
+        row[MoneyTransactionTable.isCoast],
+        row[CategoryTable.name]
     )
 
     private fun MoneyTransactionTable.setValues(

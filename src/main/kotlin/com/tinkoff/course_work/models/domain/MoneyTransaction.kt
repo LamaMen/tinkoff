@@ -7,5 +7,6 @@ data class MoneyTransaction(
     val title: String,
     val amount: Long,
     val date: LocalDateTime,
-    val isCoast: Boolean
+    val isCoast: Boolean,
+    val category: String?
 )

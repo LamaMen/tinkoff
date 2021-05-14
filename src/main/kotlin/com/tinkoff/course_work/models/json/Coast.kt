@@ -4,9 +4,10 @@ import com.fasterxml.jackson.annotation.JsonFormat
 import java.time.LocalDateTime
 
 class Coast(
-    id: Int?,
-    title: String,
-    amount: Long,
+    override val id: Int?,
+    override val title: String,
+    override val amount: Long,
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "d MMMM yyyy HH:mm")
-    date: LocalDateTime?
-) : BasicJson(id, title, amount, date)
+    override val date: LocalDateTime?,
+    override val category: String?
+) : BasicJson

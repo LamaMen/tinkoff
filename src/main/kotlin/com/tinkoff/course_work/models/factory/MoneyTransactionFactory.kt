@@ -10,7 +10,14 @@ import java.time.LocalDateTime
 class MoneyTransactionFactory {
     fun build(json: BasicJson, parentTransaction: MoneyTransaction): MoneyTransaction {
         val isCoast = json is Coast
-        return MoneyTransaction(parentTransaction.id, json.title, json.amount, parentTransaction.date, isCoast)
+        return MoneyTransaction(
+            parentTransaction.id,
+            json.title,
+            json.amount,
+            parentTransaction.date,
+            isCoast,
+            json.category
+        )
     }
 
     fun build(json: BasicJson) = build(json.id, json)
@@ -18,6 +25,6 @@ class MoneyTransactionFactory {
     fun build(id: Int?, json: BasicJson): MoneyTransaction {
         val date = json.date ?: LocalDateTime.now()
         val isCoast = json is Coast
-        return MoneyTransaction(id, json.title, json.amount, date, isCoast)
+        return MoneyTransaction(id, json.title, json.amount, date, isCoast, json.category)
     }
 }
