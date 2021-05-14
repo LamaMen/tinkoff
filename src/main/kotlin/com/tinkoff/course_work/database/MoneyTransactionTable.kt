@@ -9,4 +9,5 @@ object MoneyTransactionTable : IntIdTable("money_transaction") {
     val date = datetime("date")
     val isCoast = bool("is_coast")
     val user = reference("user_id", UserTable)
+    val category = reference("category_id", CategoryTable)
 }
