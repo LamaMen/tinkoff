@@ -1,5 +1,6 @@
 package com.tinkoff.course_work.models.factory
 
+import com.tinkoff.course_work.models.domain.Category
 import com.tinkoff.course_work.models.domain.MoneyTransaction
 import com.tinkoff.course_work.models.json.BasicJson
 import com.tinkoff.course_work.models.json.Coast
@@ -16,7 +17,7 @@ class MoneyTransactionFactory {
             json.amount,
             parentTransaction.date,
             isCoast,
-            json.category
+            Category.valueOf(json.category)
         )
     }
 
@@ -25,6 +26,6 @@ class MoneyTransactionFactory {
     fun build(id: Int?, json: BasicJson): MoneyTransaction {
         val date = json.date ?: LocalDateTime.now()
         val isCoast = json is Coast
-        return MoneyTransaction(id, json.title, json.amount, date, isCoast, json.category)
+        return MoneyTransaction(id, json.title, json.amount, date, isCoast, Category.valueOf(json.category))
     }
 }

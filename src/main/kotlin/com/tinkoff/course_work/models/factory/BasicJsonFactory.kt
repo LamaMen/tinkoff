@@ -1,6 +1,7 @@
 package com.tinkoff.course_work.models.factory
 
 import com.tinkoff.course_work.models.domain.MoneyTransaction
+import com.tinkoff.course_work.models.domain.categoryName
 import com.tinkoff.course_work.models.json.BasicJson
 import com.tinkoff.course_work.models.json.Coast
 import com.tinkoff.course_work.models.json.Income
@@ -15,7 +16,7 @@ class BasicJsonFactory {
     @Suppress("UNCHECKED_CAST")
     fun <T : BasicJson> build(id: Int?, transaction: MoneyTransaction): T {
         return if (transaction.isCoast) {
-            Coast(id, transaction.title, transaction.amount, transaction.date, transaction.category) as T
+            Coast(id, transaction.title, transaction.amount, transaction.date, transaction.categoryName()) as T
         } else {
             Income(id, transaction.title, transaction.amount, transaction.date) as T
         }

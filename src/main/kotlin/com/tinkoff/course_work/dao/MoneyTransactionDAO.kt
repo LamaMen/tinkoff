@@ -1,9 +1,10 @@
 package com.tinkoff.course_work.dao
 
-import com.tinkoff.course_work.database.CategoryTable
 import com.tinkoff.course_work.database.MoneyTransactionTable
 import com.tinkoff.course_work.exceptions.TransactionNotFoundException
+import com.tinkoff.course_work.models.domain.Category
 import com.tinkoff.course_work.models.domain.MoneyTransaction
+import com.tinkoff.course_work.models.domain.categoryId
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.jetbrains.exposed.sql.*
@@ -27,10 +28,8 @@ class MoneyTransactionDAO(private val database: Database) {
         getCollectionFromDB(MoneyTransactionTable.user eq UUID.fromString(userId))
 
     suspend fun addTransaction(transaction: MoneyTransaction, userId: String): Int = dbQuery {
-        val categoryId = getCategoryFromTransaction(transaction)
-
         val id = MoneyTransactionTable.insertAndGetId {
-            setValues(it, transaction, categoryId, userId)
+            setValues(it, transaction, userId)
         }.value
 
         logger.info("Save transaction with ID=$id for user $userId")
@@ -42,10 +41,8 @@ class MoneyTransactionDAO(private val database: Database) {
             ?: throw TransactionNotFoundException(transaction.id)
 
         dbQuery {
-            val categoryId = getCategoryFromTransaction(transaction)
-
             MoneyTransactionTable.update({ checkTransactionId(transaction.id, transaction.isCoast, userId) }) {
-                setValues(it, transaction, categoryId, userId)
+                setValues(it, transaction, userId)
             }
             logger.info("Update transaction=$transaction for user $userId")
         }
@@ -60,11 +57,7 @@ class MoneyTransactionDAO(private val database: Database) {
     }
 
     private suspend fun getCollectionFromDB(condition: Op<Boolean>) = dbQuery {
-        MoneyTransactionTable.join(
-            CategoryTable,
-            JoinType.INNER,
-            additionalConstraint = { MoneyTransactionTable.category eq CategoryTable.id }
-        )
+        MoneyTransactionTable
             .select { condition }
             .map(::extractMoneyTransaction)
     }
@@ -85,13 +78,12 @@ class MoneyTransactionDAO(private val database: Database) {
         row[MoneyTransactionTable.amount],
         row[MoneyTransactionTable.date],
         row[MoneyTransactionTable.isCoast],
-        row[CategoryTable.name]
+        Category(row[MoneyTransactionTable.category])
     )
 
     private fun MoneyTransactionTable.setValues(
         it: UpdateBuilder<Int>,
         transaction: MoneyTransaction,
-        categoryId: Int,
         userId: String
     ) {
         it[amount] = transaction.amount
@@ -99,16 +91,7 @@ class MoneyTransactionDAO(private val database: Database) {
         it[date] = transaction.date
         it[isCoast] = transaction.isCoast
         it[user] = UUID.fromString(userId)
-        it[category] = categoryId
-    }
-
-    private fun getCategoryFromTransaction(transaction: MoneyTransaction): Int {
-        val category = transaction.category ?: "Other"
-
-        return CategoryTable
-            .select { CategoryTable.name eq category }
-            .map { it[CategoryTable.id] }
-            .firstOrNull()?.value ?: 10
+        it[category] = transaction.categoryId()
     }
 
     suspend fun <T> dbQuery(statement: Transaction.() -> T): T = withContext(Dispatchers.IO) {
