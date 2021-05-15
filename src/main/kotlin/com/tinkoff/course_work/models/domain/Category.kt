@@ -21,6 +21,12 @@ enum class Category {
         } catch (e: IllegalArgumentException) {
             Other
         }
+
+        fun check(name: String?) = try {
+            name != null && name in VALUES.map(Category::name)
+        } catch (e: IllegalArgumentException) {
+            false
+        }
     }
 }
 

@@ -22,6 +22,12 @@ class CoastController(private val coastService: JsonService<Coast>) {
         return coastService.getById(id, userId)
     }
 
+    @GetMapping("/category")
+    suspend fun getByCategory(principal: Principal, @RequestParam(name = "name") category: String): List<Coast> {
+        val userId = principal.name
+        return coastService.getByCategory(category, userId)
+    }
+
     @PostMapping
     suspend fun addCoast(principal: Principal, @RequestBody coast: Coast): Coast {
         val userId = principal.name
