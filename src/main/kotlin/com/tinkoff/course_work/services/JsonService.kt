@@ -1,14 +1,12 @@
 package com.tinkoff.course_work.services
 
 import com.tinkoff.course_work.dao.MoneyTransactionDAO
-import com.tinkoff.course_work.exceptions.BadRequestException
-import com.tinkoff.course_work.models.domain.Category
 import com.tinkoff.course_work.models.domain.MoneyTransaction
 import com.tinkoff.course_work.models.domain.categoryName
+import com.tinkoff.course_work.models.domain.validate
 import com.tinkoff.course_work.models.factory.BasicJsonFactory
 import com.tinkoff.course_work.models.factory.MoneyTransactionFactory
 import com.tinkoff.course_work.models.json.BasicJson
-import org.slf4j.LoggerFactory
 import org.springframework.context.annotation.Scope
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
@@ -21,55 +19,45 @@ class JsonService<T : BasicJson>(
     private val entityFactory: BasicJsonFactory,
     private val transactionFactory: MoneyTransactionFactory
 ) {
-    private val logger = LoggerFactory.getLogger(this::class.java)
     var isCoast: Boolean = true
 
     suspend fun getAll(userId: String): List<T> {
-        val jsons: List<T> = getJsonByCondition(userId) { it.isCoast == isCoast }
-        logger.info("Given ${jsons.size} ${if (isCoast) "coasts" else "incomes"} for user $userId")
-        return jsons
+        return getJsonByCondition(userId) { it.isCoast == isCoast }
     }
 
     suspend fun getById(id: Int, userId: String): T {
-        val json: T = entityFactory.build(dao.getTransactionById(id, isCoast, userId))
-        logger.info("Given ${if (isCoast) "coast" else "income"} with ID=$id for user $userId")
-        return json
+        return entityFactory.build(dao.getTransactionById(id, isCoast, userId))
     }
 
     suspend fun getFromInterval(from: Date?, to: Date?, userId: String): List<T> {
         val begin = from?.toLocalDateTime() ?: LocalDateTime.MIN
         val end = to?.toLocalDateTime() ?: LocalDateTime.now()
-        val jsons: List<T> = getJsonByCondition(userId) { transaction ->
+
+        return getJsonByCondition(userId) { transaction ->
             transaction.isCoast == isCoast
                     && transaction.date.isAfter(begin)
                     && transaction.date.isBefore(end)
         }
-
-        logger.info("Given ${jsons.size} ${if (isCoast) "coasts" else "incomes"} in interval $begin to $end for user $userId")
-        return jsons
     }
 
     suspend fun getByCategory(category: String, userId: String): List<T> {
-        if (!Category.check(category)) {
-            throw BadRequestException("No such category")
-        }
+        category.validate()
 
-        val jsons: List<T> = getJsonByCondition(userId) { transaction ->
+        return getJsonByCondition(userId) { transaction ->
             transaction.isCoast == isCoast
                     && transaction.categoryName() == category
         }
-
-        logger.info("Given ${jsons.size} ${if (isCoast) "coasts" else "incomes"} for category '$category' for user $userId")
-        return jsons
     }
 
     suspend fun add(json: T, userId: String): T {
+        json.validateCategory()
         val transaction = transactionFactory.build(json)
         val id = dao.addTransaction(transaction, userId)
         return entityFactory.build(id, transaction)
     }
 
     suspend fun update(id: Int, json: T, userId: String): T {
+        json.validateCategory()
         val transactionFromDB = dao.getTransactionById(id, isCoast, userId)
         val savedTransaction = transactionFactory.build(json, transactionFromDB)
         dao.updateTransaction(savedTransaction, userId)
@@ -80,7 +68,7 @@ class JsonService<T : BasicJson>(
         dao.deleteTransactionById(id, isCoast, userId)
     }
 
-    private suspend fun getJsonByCondition(userId: String, condition: (MoneyTransaction) -> Boolean): List<T> =
+    suspend fun getJsonByCondition(userId: String, condition: (MoneyTransaction) -> Boolean): List<T> =
         dao.getAllTransactionsByUser(userId)
             .filter(condition)
             .map(entityFactory::build)

@@ -11,14 +11,11 @@ import org.jetbrains.exposed.sql.*
 import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.statements.UpdateBuilder
 import org.jetbrains.exposed.sql.transactions.transaction
-import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Repository
 import java.util.*
 
 @Repository
 class MoneyTransactionDAO(private val database: Database) {
-    private val logger = LoggerFactory.getLogger(MoneyTransactionDAO::class.java)
-
     suspend fun getTransactionById(id: Int?, isCoast: Boolean, userId: String): MoneyTransaction {
         return getCollectionFromDB(checkTransactionId(id, isCoast, userId)).firstOrNull()
             ?: throw TransactionNotFoundException(id)
@@ -28,12 +25,9 @@ class MoneyTransactionDAO(private val database: Database) {
         getCollectionFromDB(MoneyTransactionTable.user eq UUID.fromString(userId))
 
     suspend fun addTransaction(transaction: MoneyTransaction, userId: String): Int = dbQuery {
-        val id = MoneyTransactionTable.insertAndGetId {
+        MoneyTransactionTable.insertAndGetId {
             setValues(it, transaction, userId)
         }.value
-
-        logger.info("Save transaction with ID=$id for user $userId")
-        return@dbQuery id
     }
 
     suspend fun updateTransaction(transaction: MoneyTransaction, userId: String) {
@@ -44,7 +38,6 @@ class MoneyTransactionDAO(private val database: Database) {
             MoneyTransactionTable.update({ checkTransactionId(transaction.id, transaction.isCoast, userId) }) {
                 setValues(it, transaction, userId)
             }
-            logger.info("Update transaction=$transaction for user $userId")
         }
     }
 
@@ -52,7 +45,6 @@ class MoneyTransactionDAO(private val database: Database) {
         dbQuery {
             val status = MoneyTransactionTable.deleteWhere { checkTransactionId(id, isCoast, userId) }
             if (status == 0) throw TransactionNotFoundException(id)
-            else logger.info("Transaction with ID=$id deleted for user $userId")
         }
     }
 

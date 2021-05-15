@@ -1,5 +1,7 @@
 package com.tinkoff.course_work.models.domain
 
+import com.tinkoff.course_work.exceptions.BadRequestException
+
 enum class Category {
     Other,
     Home,
@@ -21,14 +23,17 @@ enum class Category {
         } catch (e: IllegalArgumentException) {
             Other
         }
-
-        fun check(name: String?) = try {
-            name != null && name in VALUES.map(Category::name)
-        } catch (e: IllegalArgumentException) {
-            false
-        }
     }
 }
 
 fun MoneyTransaction.categoryId() = this.category.ordinal
+
 fun MoneyTransaction.categoryName() = this.category.name
+
+fun String?.isCategory() = this != null && this in Category.values().map(Category::name)
+
+fun String?.validate() {
+    if (!this.isCategory()) {
+        throw BadRequestException("No such category")
+    }
+}

@@ -13,4 +13,6 @@ class Income(
 ) : BasicJson {
     @JsonIgnore
     override val category: String? = null
+
+    override fun validateCategory() {}
 }

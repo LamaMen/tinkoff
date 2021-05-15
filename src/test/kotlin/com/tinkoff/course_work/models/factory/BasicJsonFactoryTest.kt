@@ -1,5 +1,8 @@
+@file:Suppress("UNUSED_VARIABLE")
+
 package com.tinkoff.course_work.models.factory
 
+import com.tinkoff.course_work.models.domain.Category
 import com.tinkoff.course_work.models.domain.MoneyTransaction
 import com.tinkoff.course_work.models.json.Coast
 import com.tinkoff.course_work.models.json.Income
@@ -12,7 +15,7 @@ class BasicJsonFactoryTest {
 
     @Test
     fun `build coast by transaction without id`() {
-        val transaction = MoneyTransaction(null, "transaction", 10, LocalDateTime.now(), true)
+        val transaction = MoneyTransaction(null, "transaction", 10, LocalDateTime.now(), true, Category.Other)
         val coast = factory.build<Coast>(transaction)
 
         assertNull(coast.id)
@@ -23,7 +26,7 @@ class BasicJsonFactoryTest {
 
     @Test
     fun `build coast by transaction with id`() {
-        val transaction = MoneyTransaction(1, "transaction", 10, LocalDateTime.now(), true)
+        val transaction = MoneyTransaction(1, "transaction", 10, LocalDateTime.now(), true, Category.Other)
         val coast = factory.build<Coast>(transaction)
 
         assertNotNull(coast.id)
@@ -35,7 +38,7 @@ class BasicJsonFactoryTest {
 
     @Test
     fun `build income by transaction without id`() {
-        val transaction = MoneyTransaction(null, "transaction", 10, LocalDateTime.now(), false)
+        val transaction = MoneyTransaction(null, "transaction", 10, LocalDateTime.now(), false, Category.Other)
         val income = factory.build<Income>(transaction)
 
         assertNull(income.id)
@@ -46,7 +49,7 @@ class BasicJsonFactoryTest {
 
     @Test
     fun `build income by transaction with id`() {
-        val transaction = MoneyTransaction(1, "transaction", 10, LocalDateTime.now(), false)
+        val transaction = MoneyTransaction(1, "transaction", 10, LocalDateTime.now(), false, Category.Other)
         val income = factory.build<Income>(transaction)
 
         assertNotNull(income.id)
@@ -59,7 +62,7 @@ class BasicJsonFactoryTest {
     @Test
     fun `build coast by null id and transaction`() {
         val id = null
-        val transaction = MoneyTransaction(1, "transaction", 10, LocalDateTime.now(), true)
+        val transaction = MoneyTransaction(1, "transaction", 10, LocalDateTime.now(), true, Category.Other)
         val coast = factory.build<Coast>(id, transaction)
 
         assertNull(coast.id)
@@ -71,7 +74,7 @@ class BasicJsonFactoryTest {
     @Test
     fun `build coast by id and transaction`() {
         val id = 1
-        val transaction = MoneyTransaction(null, "transaction", 10, LocalDateTime.now(), true)
+        val transaction = MoneyTransaction(null, "transaction", 10, LocalDateTime.now(), true, Category.Other)
         val coast = factory.build<Coast>(id, transaction)
 
         assertNotNull(coast.id)
@@ -84,7 +87,7 @@ class BasicJsonFactoryTest {
     @Test
     fun `build income by null id and transaction`() {
         val id = null
-        val transaction = MoneyTransaction(1, "transaction", 10, LocalDateTime.now(), false)
+        val transaction = MoneyTransaction(1, "transaction", 10, LocalDateTime.now(), false, Category.Other)
         val income = factory.build<Income>(id, transaction)
 
         assertNull(income.id)
@@ -96,7 +99,7 @@ class BasicJsonFactoryTest {
     @Test
     fun `build income by id and transaction`() {
         val id = 1
-        val transaction = MoneyTransaction(null, "transaction", 10, LocalDateTime.now(), false)
+        val transaction = MoneyTransaction(null, "transaction", 10, LocalDateTime.now(), false, Category.Other)
         val income = factory.build<Income>(id, transaction)
 
         assertNotNull(income.id)
@@ -108,13 +111,13 @@ class BasicJsonFactoryTest {
 
     @Test
     fun `build coast by transaction with income`() {
-        val transaction = MoneyTransaction(null, "transaction", 10, LocalDateTime.now(), false)
+        val transaction = MoneyTransaction(null, "transaction", 10, LocalDateTime.now(), false, Category.Other)
         assertThrows(ClassCastException::class.java) { val coast = factory.build<Coast>(transaction) }
     }
 
     @Test
     fun `build income by transaction with coast`() {
-        val transaction = MoneyTransaction(null, "transaction", 10, LocalDateTime.now(), true)
+        val transaction = MoneyTransaction(null, "transaction", 10, LocalDateTime.now(), true, Category.Other)
         assertThrows(ClassCastException::class.java) { val income = factory.build<Income>(transaction) }
     }
 }

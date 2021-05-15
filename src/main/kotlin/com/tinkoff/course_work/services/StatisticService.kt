@@ -27,4 +27,9 @@ class StatisticService(
 
         return mapOf("balance" to balance)
     }
+
+    suspend fun groupByCategories(userId: String): Map<String, List<Coast>> {
+        return coastService.getJsonByCondition(userId) { it.isCoast }
+            .groupBy { coast -> coast.category!! }
+    }
 }

@@ -2,6 +2,7 @@ package com.tinkoff.course_work.services
 
 import com.tinkoff.course_work.dao.MoneyTransactionDAO
 import com.tinkoff.course_work.exceptions.TransactionNotFoundException
+import com.tinkoff.course_work.models.domain.Category
 import com.tinkoff.course_work.models.domain.MoneyTransaction
 import com.tinkoff.course_work.models.factory.BasicJsonFactory
 import com.tinkoff.course_work.models.factory.MoneyTransactionFactory
@@ -29,12 +30,12 @@ class JsonServiceTest {
     private val userId = "1"
     private val date = LocalDateTime.now()
     private val listCoast = mutableListOf(
-        MoneyTransaction(1, "", 1, date, true),
-        MoneyTransaction(2, "", 1, date, true),
-        MoneyTransaction(3, "", 1, date, true),
-        MoneyTransaction(4, "", 1, date, false),
-        MoneyTransaction(5, "", 1, date, false),
-        MoneyTransaction(6, "", 1, date, false),
+        MoneyTransaction(1, "", 1, date, true, Category.Other),
+        MoneyTransaction(2, "", 1, date, true, Category.Other),
+        MoneyTransaction(3, "", 1, date, true, Category.Other),
+        MoneyTransaction(4, "", 1, date, false, Category.Other),
+        MoneyTransaction(5, "", 1, date, false, Category.Other),
+        MoneyTransaction(6, "", 1, date, false, Category.Other),
     )
 
     @BeforeAll
@@ -46,7 +47,7 @@ class JsonServiceTest {
             coEvery { getAllTransactionsByUser(any()) } returns listOf()
             coEvery { getAllTransactionsByUser(userId) } returns listCoast
 
-            coEvery { getTransactionById(any(), any(), any()) } throws TransactionNotFoundException()
+            coEvery { getTransactionById(any(), any(), any()) } throws TransactionNotFoundException(0)
 
             coEvery {
                 getTransactionById(
@@ -66,7 +67,7 @@ class JsonServiceTest {
 
             coEvery { addTransaction(any(), userId) } returns 7
 
-            coEvery { updateTransaction(any(), any()) } throws TransactionNotFoundException()
+            coEvery { updateTransaction(any(), any()) } throws TransactionNotFoundException(0)
             coEvery {
                 updateTransaction(
                     match {
@@ -85,7 +86,7 @@ class JsonServiceTest {
             } returns Unit
 
 
-            coEvery { deleteTransactionById(any(), any(), any()) } throws TransactionNotFoundException()
+            coEvery { deleteTransactionById(any(), any(), any()) } throws TransactionNotFoundException(0)
             coEvery {
                 deleteTransactionById(
                     range(1, 3, fromInclusive = true, toInclusive = true),
@@ -170,7 +171,7 @@ class JsonServiceTest {
 
     @Test
     fun `add new coast with date`() = runBlocking {
-        val coast = Coast(null, "test", 1, date)
+        val coast = Coast(null, "test", 1, date, null)
         val newCoast = coastService.add(coast, userId)
 
         assertNotNull(newCoast.id)
@@ -181,7 +182,7 @@ class JsonServiceTest {
 
     @Test
     fun `add new coast without date`() = runBlocking {
-        val coast = Coast(null, "test", 1, null)
+        val coast = Coast(null, "test", 1, null, null)
         val newCoast = coastService.add(coast, userId)
 
         assertNotNull(newCoast.id)
@@ -215,7 +216,7 @@ class JsonServiceTest {
     @Test
     fun `update exist coast`() = runBlocking {
         val id = 1
-        val coast = Coast(id, "test", 1, date)
+        val coast = Coast(id, "test", 1, date, null)
         val newCoast = coastService.update(id, coast, userId)
 
         assertNotNull(newCoast.id)
@@ -227,7 +228,7 @@ class JsonServiceTest {
     @Test
     fun `update non-exist coast`() {
         val id = 9
-        val coast = Coast(id, "test", 1, date)
+        val coast = Coast(id, "test", 1, date, null)
         assertThrowTransactionNotFoundException { coastService.update(id, coast, userId) }
     }
 
