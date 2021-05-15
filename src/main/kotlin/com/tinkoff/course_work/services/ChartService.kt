@@ -1,6 +1,7 @@
 package com.tinkoff.course_work.services
 
 import com.tinkoff.course_work.integration.URLBuilder
+import com.tinkoff.course_work.models.json.Coast
 import org.springframework.stereotype.Service
 
 @Service
@@ -9,16 +10,24 @@ class ChartService(
 ) {
     suspend fun getChartForGroupingCoastsByCategoriesByCount(userId: String): String {
         val categories = statistic.groupByCategories(userId)
-        val names = mutableListOf<String>()
-        val counts = categories.entries.map { entry ->
-            names.add(entry.key)
-            return@map entry.value.size
-        }
+        val names = getListKeys(categories)
+        val counts = categories.values.map { value -> value.size }
 
         return buildUrlForPieChart("Coast by categories and counts", counts, names)
     }
 
-    private fun buildUrlForPieChart(title: String, values: List<Int>, names: List<String>): String {
+    suspend fun getChartForGroupingCoastsByCategoriesByAmount(userId: String): String {
+        val categories = statistic.groupByCategories(userId)
+        val names = getListKeys(categories)
+        val counts = categories.values.map { value -> value.fold(0L) { sum, coast -> sum + coast.amount } }
+
+        return buildUrlForPieChart("Coast by categories and amounts", counts, names)
+    }
+
+    private fun getListKeys(categories: Map<String, List<Coast>>) =
+        categories.keys.toList()
+
+    private fun buildUrlForPieChart(title: String, values: List<Number>, names: List<String>): String {
         return URLBuilder()
             .addValues(values)
             .addNames(names)

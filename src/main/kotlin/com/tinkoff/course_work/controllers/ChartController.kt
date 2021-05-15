@@ -12,8 +12,14 @@ class ChartController(
     private val service: ChartService
 ) {
     @GetMapping("/counts")
-    suspend fun groupByCategories(principal: Principal): String {
+    suspend fun groupByCategoriesAndCounts(principal: Principal): String {
         val userId = principal.name
         return service.getChartForGroupingCoastsByCategoriesByCount(userId)
+    }
+
+    @GetMapping("/amounts")
+    suspend fun groupByCategoriesAndAmounts(principal: Principal): String {
+        val userId = principal.name
+        return service.getChartForGroupingCoastsByCategoriesByAmount(userId)
     }
 }

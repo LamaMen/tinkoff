@@ -21,7 +21,7 @@ class URLBuilder {
 
     fun build() = result
 
-    fun addValues(values: List<Int>): URLBuilder {
+    fun addValues(values: List<Number>): URLBuilder {
         result += VALUE_SHADOW + COLON
         addToResult(values, COMMA)
         result += SEPARATOR
