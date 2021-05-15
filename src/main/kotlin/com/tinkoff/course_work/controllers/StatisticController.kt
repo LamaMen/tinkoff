@@ -16,6 +16,16 @@ import java.util.*
 class StatisticController(
     private val service: StatisticService
 ) {
+    @GetMapping("/balance")
+    suspend fun getBalance(
+        principal: Principal,
+        @RequestParam(name = "from", required = false) @DateTimeFormat(pattern = "d-MMMM-yyyy") from: Date?,
+        @RequestParam(name = "to", required = false) @DateTimeFormat(pattern = "d-MMMM-yyyy") to: Date?
+    ): Map<String, Long> {
+        val userId = principal.name
+        return service.getBalance(from, to, userId)
+    }
+
     @GetMapping("/coasts")
     suspend fun getCoastsFromInterval(
         principal: Principal,

@@ -36,8 +36,8 @@ class JsonService<T : BasicJson>(
         return json
     }
 
-    suspend fun getFromInterval(from: Date, to: Date?, userId: String): List<T> {
-        val begin = from.toLocalDateTime()
+    suspend fun getFromInterval(from: Date?, to: Date?, userId: String): List<T> {
+        val begin = from?.toLocalDateTime() ?: LocalDateTime.MIN
         val end = to?.toLocalDateTime() ?: LocalDateTime.now()
         val jsons: List<T> = getJsonByCondition(userId) { transaction ->
             transaction.isCoast == isCoast
@@ -45,7 +45,7 @@ class JsonService<T : BasicJson>(
                     && transaction.date.isBefore(end)
         }
 
-        logger.info("Given ${if (isCoast) "coasts" else "incomes"} in interval $begin to $end for user $userId")
+        logger.info("Given ${jsons.size} ${if (isCoast) "coasts" else "incomes"} in interval $begin to $end for user $userId")
         return jsons
     }
 
