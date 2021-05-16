@@ -70,7 +70,8 @@ class MoneyTransactionDAO(private val database: Database) {
         row[MoneyTransactionTable.amount],
         row[MoneyTransactionTable.date],
         row[MoneyTransactionTable.isCoast],
-        Category(row[MoneyTransactionTable.category])
+        Category(row[MoneyTransactionTable.category]),
+        row[MoneyTransactionTable.currency]
     )
 
     private fun MoneyTransactionTable.setValues(

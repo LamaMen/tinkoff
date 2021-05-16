@@ -9,7 +9,8 @@ class Income(
     override val title: String,
     override val amount: Long,
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "d MMMM yyyy HH:mm")
-    override val date: LocalDateTime?
+    override val date: LocalDateTime?,
+    override val currency: String?
 ) : BasicJson {
     @JsonIgnore
     override val category: String? = null

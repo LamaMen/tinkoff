@@ -8,6 +8,7 @@ interface BasicJson {
     val amount: Long
     val date: LocalDateTime?
     val category: String?
+    val currency: String?
 
     fun validateCategory()
 }

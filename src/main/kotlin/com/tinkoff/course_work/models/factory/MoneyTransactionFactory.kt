@@ -17,7 +17,8 @@ class MoneyTransactionFactory {
             json.amount,
             parentTransaction.date,
             isCoast,
-            Category.valueOf(json.category)
+            Category.valueOf(json.category),
+            parentTransaction.currency
         )
     }
 
@@ -25,7 +26,8 @@ class MoneyTransactionFactory {
 
     fun build(id: Int?, json: BasicJson): MoneyTransaction {
         val date = json.date ?: LocalDateTime.now()
+        val currency = json.currency ?: "EUR"
         val isCoast = json is Coast
-        return MoneyTransaction(id, json.title, json.amount, date, isCoast, Category.valueOf(json.category))
+        return MoneyTransaction(id, json.title, json.amount, date, isCoast, Category.valueOf(json.category), currency)
     }
 }

@@ -16,9 +16,16 @@ class BasicJsonFactory {
     @Suppress("UNCHECKED_CAST")
     fun <T : BasicJson> build(id: Int?, transaction: MoneyTransaction): T {
         return if (transaction.isCoast) {
-            Coast(id, transaction.title, transaction.amount, transaction.date, transaction.categoryName()) as T
+            Coast(
+                id,
+                transaction.title,
+                transaction.amount,
+                transaction.date,
+                transaction.categoryName(),
+                transaction.currency
+            ) as T
         } else {
-            Income(id, transaction.title, transaction.amount, transaction.date) as T
+            Income(id, transaction.title, transaction.amount, transaction.date, transaction.currency) as T
         }
     }
 }

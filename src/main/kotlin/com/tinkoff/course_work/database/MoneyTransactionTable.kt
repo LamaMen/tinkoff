@@ -10,4 +10,5 @@ object MoneyTransactionTable : IntIdTable("money_transaction") {
     val isCoast = bool("is_coast")
     val user = reference("user_id", UserTable)
     val category = integer("category_id")
+    val currency = varchar("currency", 3)
 }

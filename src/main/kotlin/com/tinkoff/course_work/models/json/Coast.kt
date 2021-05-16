@@ -11,7 +11,8 @@ class Coast(
     override val amount: Long,
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "d MMMM yyyy HH:mm")
     override val date: LocalDateTime?,
-    override val category: String?
+    override val category: String?,
+    override val currency: String?
 ) : BasicJson {
     override fun validateCategory() {
         if (this.category != null && !this.category.isCategory()) {
