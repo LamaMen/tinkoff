@@ -18,11 +18,12 @@ class StatisticController(
     @GetMapping("/balance")
     suspend fun getBalance(
         principal: Principal,
+        @RequestParam(name = "currency", required = false) currency: String?,
         @RequestParam(name = "from", required = false) @DateTimeFormat(pattern = "d-MMMM-yyyy") from: Date?,
         @RequestParam(name = "to", required = false) @DateTimeFormat(pattern = "d-MMMM-yyyy") to: Date?
-    ): Map<String, Long> {
+    ): Map<String, Double> {
         val userId = principal.name
-        val balance = service.getBalance(from, to, userId)
+        val balance = service.getBalance(currency, from, to, userId)
         logger.info("Given balance for user $userId")
         return balance
     }

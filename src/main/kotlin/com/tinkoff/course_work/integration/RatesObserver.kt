@@ -18,6 +18,31 @@ class RatesObserver(private val webClient: WebClient) {
     private var lastUpdateTime: LocalDateTime? = null
     private var rates: Rates? = null
 
+    suspend fun getBase(): String {
+        if (rates == null) updateRates()
+        return rates!!.base
+    }
+
+    suspend fun convert(amount: Number, from: String? = null, to: String? = null): Double {
+        val parent = checkNullableCurrency(from)
+        val base = checkNullableCurrency(to)
+
+        return calculate(amount, parent, base)
+    }
+
+    private fun calculate(amount: Number, from: String, to: String): Double {
+        val coefficient = rates!!.rates[to]!! / rates!!.rates[from]!!
+        return amount.toDouble() * coefficient
+    }
+
+    private suspend fun checkNullableCurrency(from: String?): String {
+        val parent = from ?: rates!!.base
+        if (!checkCurrency(parent)) {
+            throw NoSuchCurrencyException("No $from currency")
+        }
+        return parent
+    }
+
     suspend fun getRate(currency: String): Double {
         if (isNeedUpdate()) {
             updateRates()
