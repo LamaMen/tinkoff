@@ -3,9 +3,11 @@ package com.tinkoff.course_work.controllers
 import com.tinkoff.course_work.models.json.Coast
 import com.tinkoff.course_work.services.JsonService
 import org.slf4j.LoggerFactory
+import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 import java.security.Principal
+import java.util.*
 
 
 @RestController
@@ -14,9 +16,14 @@ class CoastController(private val coastService: JsonService<Coast>) {
     private val logger = LoggerFactory.getLogger(CoastController::class.java)
 
     @GetMapping
-    suspend fun getAllCoasts(principal: Principal): List<Coast> {
+    suspend fun getAllCoasts(
+        principal: Principal,
+        @RequestParam(name = "from", required = false) @DateTimeFormat(pattern = "d-MMMM-yyyy") from: Date?,
+        @RequestParam(name = "to", required = false) @DateTimeFormat(pattern = "d-MMMM-yyyy") to: Date?
+    ): List<Coast> {
         val userId = principal.name
-        val coasts = coastService.getAll(userId)
+        val isAll = from == null
+        val coasts = coastService.getFromInterval(userId = userId, from = from, to = to, isAll = isAll)
         logger.info("Given ${coasts.size} coasts for user $userId")
         return coasts
     }

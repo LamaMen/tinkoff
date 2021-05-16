@@ -3,9 +3,11 @@ package com.tinkoff.course_work.controllers
 import com.tinkoff.course_work.models.json.Income
 import com.tinkoff.course_work.services.JsonService
 import org.slf4j.LoggerFactory
+import org.springframework.format.annotation.DateTimeFormat
 import org.springframework.http.HttpStatus
 import org.springframework.web.bind.annotation.*
 import java.security.Principal
+import java.util.*
 
 
 @RestController
@@ -14,15 +16,20 @@ class IncomeController(private val incomeService: JsonService<Income>) {
     private val logger = LoggerFactory.getLogger(IncomeController::class.java)
 
     @GetMapping
-    suspend fun getAllIncomes(principal: Principal): List<Income> {
+    suspend fun getAllIncomes(
+        principal: Principal,
+        @RequestParam(name = "from", required = false) @DateTimeFormat(pattern = "d-MMMM-yyyy") from: Date?,
+        @RequestParam(name = "to", required = false) @DateTimeFormat(pattern = "d-MMMM-yyyy") to: Date?
+    ): List<Income> {
         val userId = principal.name
-        val incomes = incomeService.getAll(userId)
+        val isAll = from == null
+        val incomes = incomeService.getFromInterval(userId = userId, from = from, to = to, isAll = isAll)
         logger.info("Given ${incomes.size} incomes for user $userId")
         return incomes
     }
 
     @GetMapping("/{id}")
-    suspend fun getEmployeeById(principal: Principal, @PathVariable id: Int): Income {
+    suspend fun getIncomeById(principal: Principal, @PathVariable id: Int): Income {
         val userId = principal.name
         val income = incomeService.getById(id, userId)
         logger.info("Given income with ID=$id for user $userId")

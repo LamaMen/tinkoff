@@ -12,18 +12,12 @@ class StatisticService(
     private val incomeService: JsonService<Income>,
     private val ratesObserver: RatesObserver
 ) {
-    suspend fun getCoastsFromInterval(from: Date, to: Date?, userId: String) =
-        coastService.getFromInterval(from, to, userId)
-
-    suspend fun getIncomesFromInterval(from: Date, to: Date?, userId: String) =
-        incomeService.getFromInterval(from, to, userId)
-
     suspend fun getBalance(from: Date?, to: Date?, userId: String): Map<String, Long> {
-        var balance = incomeService.getFromInterval(from, to, userId).fold(0L) { sum, income ->
+        var balance = incomeService.getFromInterval(userId = userId, from = from, to = to).fold(0L) { sum, income ->
             sum + income.amount
         }
 
-        balance = coastService.getFromInterval(from, to, userId).fold(balance) { sum, coast ->
+        balance = coastService.getFromInterval(userId = userId, from = from, to = to).fold(balance) { sum, coast ->
             sum - coast.amount
         }
 

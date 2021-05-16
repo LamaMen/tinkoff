@@ -21,23 +21,19 @@ class JsonService<T : BasicJson>(
 ) {
     var isCoast: Boolean = true
 
-    suspend fun getAll(userId: String): List<T> {
-        return getJsonByCondition(userId) { it.isCoast == isCoast }
-    }
-
-    suspend fun getById(id: Int, userId: String): T {
-        return entityFactory.build(dao.getTransactionById(id, isCoast, userId))
-    }
-
-    suspend fun getFromInterval(from: Date?, to: Date?, userId: String): List<T> {
+    suspend fun getFromInterval(userId: String, isAll: Boolean = false, from: Date? = null, to: Date? = null): List<T> {
         val begin = from?.toLocalDateTime() ?: LocalDateTime.MIN
-        val end = to?.toLocalDateTime() ?: LocalDateTime.now()
+        val end = to?.toLocalDateTime() ?: if (!isAll) LocalDateTime.now() else LocalDateTime.MAX
 
         return getJsonByCondition(userId) { transaction ->
             transaction.isCoast == isCoast
                     && transaction.date.isAfter(begin)
                     && transaction.date.isBefore(end)
         }
+    }
+
+    suspend fun getById(id: Int, userId: String): T {
+        return entityFactory.build(dao.getTransactionById(id, isCoast, userId))
     }
 
     suspend fun getByCategory(category: String, userId: String): List<T> {
