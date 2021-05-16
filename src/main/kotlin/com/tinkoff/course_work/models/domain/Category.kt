@@ -26,7 +26,7 @@ enum class Category {
     }
 }
 
-fun MoneyTransaction.categoryId() = this.category.ordinal
+fun BaseTransaction.categoryId() = this.category.ordinal
 
 fun MoneyTransaction.categoryName() = this.category.name
 
