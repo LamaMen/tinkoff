@@ -2,7 +2,7 @@ package com.tinkoff.course_work.services
 
 import com.tinkoff.course_work.integration.RatesObserver
 import com.tinkoff.course_work.integration.URLBuilder
-import com.tinkoff.course_work.models.json.Coast
+import com.tinkoff.course_work.models.json.ordinary.Coast
 import org.springframework.stereotype.Service
 import kotlin.math.roundToLong
 

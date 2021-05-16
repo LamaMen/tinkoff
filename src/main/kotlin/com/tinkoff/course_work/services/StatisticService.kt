@@ -1,8 +1,8 @@
 package com.tinkoff.course_work.services
 
 import com.tinkoff.course_work.integration.RatesObserver
-import com.tinkoff.course_work.models.json.Coast
-import com.tinkoff.course_work.models.json.Income
+import com.tinkoff.course_work.models.json.ordinary.Coast
+import com.tinkoff.course_work.models.json.ordinary.Income
 import org.springframework.stereotype.Service
 import java.util.*
 

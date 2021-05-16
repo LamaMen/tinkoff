@@ -1,0 +1,95 @@
+package com.tinkoff.course_work.dao
+
+import com.tinkoff.course_work.database.MoneyTransactionTable
+import com.tinkoff.course_work.exceptions.TransactionNotFoundException
+import com.tinkoff.course_work.models.domain.Category
+import com.tinkoff.course_work.models.domain.MoneyTransaction
+import com.tinkoff.course_work.models.domain.categoryId
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import org.jetbrains.exposed.sql.*
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.statements.UpdateBuilder
+import org.jetbrains.exposed.sql.transactions.transaction
+import org.springframework.stereotype.Repository
+import java.util.*
+
+@Repository("ordinary")
+class OrdinaryMoneyTransactionDAO(private val database: Database) : MoneyTransactionDAO {
+    override suspend fun getTransactionById(userId: String, id: Int?, isCoast: Boolean): MoneyTransaction {
+        return getCollectionFromDB(checkTransactionId(userId, id, isCoast)).firstOrNull()
+            ?: throw TransactionNotFoundException(id)
+    }
+
+    override suspend fun getAllTransactionsByUser(userId: String): List<MoneyTransaction> =
+        getCollectionFromDB(MoneyTransactionTable.user eq UUID.fromString(userId))
+
+    override suspend fun addTransaction(userId: String, transaction: MoneyTransaction): Int = dbQuery {
+        MoneyTransactionTable.insertAndGetId {
+            setValues(it, transaction, userId)
+        }.value
+    }
+
+    override suspend fun updateTransaction(userId: String, transaction: MoneyTransaction) {
+        getCollectionFromDB(checkTransactionId(userId, transaction.id, transaction.isCoast)).firstOrNull()
+            ?: throw TransactionNotFoundException(transaction.id)
+
+        dbQuery {
+            MoneyTransactionTable.update({ checkTransactionId(userId, transaction.id, transaction.isCoast) }) {
+                setValues(it, transaction, userId)
+            }
+        }
+    }
+
+    override suspend fun deleteTransactionById(userId: String, id: Int, isCoast: Boolean) {
+        dbQuery {
+            val status = MoneyTransactionTable.deleteWhere { checkTransactionId(userId, id, isCoast) }
+            if (status == 0) throw TransactionNotFoundException(id)
+        }
+    }
+
+    private suspend fun getCollectionFromDB(condition: Op<Boolean>) = dbQuery {
+        MoneyTransactionTable
+            .select { condition }
+            .map(::extractMoneyTransaction)
+    }
+
+    private fun checkTransactionId(userId: String, transactionId: Int?, isCoast: Boolean): Op<Boolean> {
+        if (transactionId == null) {
+            throw TransactionNotFoundException(transactionId)
+        } else {
+            return MoneyTransactionTable.id eq transactionId and
+                    (MoneyTransactionTable.user eq UUID.fromString(userId)) and
+                    (MoneyTransactionTable.isCoast eq isCoast)
+        }
+    }
+
+    private fun extractMoneyTransaction(row: ResultRow) = MoneyTransaction(
+        row[MoneyTransactionTable.id].value,
+        row[MoneyTransactionTable.title],
+        row[MoneyTransactionTable.amount],
+        row[MoneyTransactionTable.date],
+        row[MoneyTransactionTable.isCoast],
+        Category(row[MoneyTransactionTable.category]),
+        row[MoneyTransactionTable.currency]
+    )
+
+    private fun MoneyTransactionTable.setValues(
+        it: UpdateBuilder<Int>,
+        transaction: MoneyTransaction,
+        userId: String
+    ) {
+        it[amount] = transaction.amount
+        it[title] = transaction.title
+        it[date] = transaction.date
+        it[isCoast] = transaction.isCoast
+        it[user] = UUID.fromString(userId)
+        it[category] = transaction.categoryId()
+        it[currency] = transaction.currency
+    }
+
+    suspend fun <T> dbQuery(statement: Transaction.() -> T): T = withContext(Dispatchers.IO) {
+        transaction(database, statement)
+    }
+}
+

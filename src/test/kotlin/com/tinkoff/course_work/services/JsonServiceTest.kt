@@ -1,13 +1,14 @@
 package com.tinkoff.course_work.services
 
-import com.tinkoff.course_work.dao.MoneyTransactionDAO
+import com.tinkoff.course_work.dao.OrdinaryMoneyTransactionDAO
 import com.tinkoff.course_work.exceptions.TransactionNotFoundException
+import com.tinkoff.course_work.integration.RatesObserver
 import com.tinkoff.course_work.models.domain.Category
 import com.tinkoff.course_work.models.domain.MoneyTransaction
 import com.tinkoff.course_work.models.factory.BasicJsonFactory
 import com.tinkoff.course_work.models.factory.MoneyTransactionFactory
-import com.tinkoff.course_work.models.json.Coast
-import com.tinkoff.course_work.models.json.Income
+import com.tinkoff.course_work.models.json.ordinary.Coast
+import com.tinkoff.course_work.models.json.ordinary.Income
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
@@ -21,7 +22,7 @@ import java.time.LocalDateTime
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class JsonServiceTest {
-    private lateinit var dao: MoneyTransactionDAO
+    private lateinit var dao: OrdinaryMoneyTransactionDAO
     private lateinit var factory: BasicJsonFactory
     private lateinit var transactionFactory: MoneyTransactionFactory
     private lateinit var coastService: JsonService<Coast>
@@ -30,12 +31,12 @@ class JsonServiceTest {
     private val userId = "1"
     private val date = LocalDateTime.now()
     private val listCoast = mutableListOf(
-        MoneyTransaction(1, "", 1, date, true, Category.Other),
-        MoneyTransaction(2, "", 1, date, true, Category.Other),
-        MoneyTransaction(3, "", 1, date, true, Category.Other),
-        MoneyTransaction(4, "", 1, date, false, Category.Other),
-        MoneyTransaction(5, "", 1, date, false, Category.Other),
-        MoneyTransaction(6, "", 1, date, false, Category.Other),
+        MoneyTransaction(1, "", 1, date, true, Category.Other, "EUR"),
+        MoneyTransaction(2, "", 1, date, true, Category.Other, "EUR"),
+        MoneyTransaction(3, "", 1, date, true, Category.Other, "EUR"),
+        MoneyTransaction(4, "", 1, date, false, Category.Other, "EUR"),
+        MoneyTransaction(5, "", 1, date, false, Category.Other, "EUR"),
+        MoneyTransaction(6, "", 1, date, false, Category.Other, "EUR"),
     )
 
     @BeforeAll
@@ -51,37 +52,37 @@ class JsonServiceTest {
 
             coEvery {
                 getTransactionById(
+                    userId,
                     range(1, 3, fromInclusive = true, toInclusive = true),
-                    true,
-                    userId
+                    true
                 )
             } returns listCoast[0]
 
             coEvery {
                 getTransactionById(
+                    userId,
                     range(4, 6, fromInclusive = true, toInclusive = true),
-                    false,
-                    userId
+                    false
                 )
             } returns listCoast[3]
 
-            coEvery { addTransaction(any(), userId) } returns 7
+            coEvery { addTransaction(userId, any()) } returns 7
 
             coEvery { updateTransaction(any(), any()) } throws TransactionNotFoundException(0)
             coEvery {
                 updateTransaction(
+                    userId,
                     match {
                         it.id in 1..3 && it.isCoast
-                    },
-                    userId
+                    }
                 )
             } returns Unit
             coEvery {
                 updateTransaction(
+                    userId,
                     match {
                         it.id in 4..6 && !it.isCoast
-                    },
-                    userId
+                    }
                 )
             } returns Unit
 
@@ -89,29 +90,31 @@ class JsonServiceTest {
             coEvery { deleteTransactionById(any(), any(), any()) } throws TransactionNotFoundException(0)
             coEvery {
                 deleteTransactionById(
+                    userId,
                     range(1, 3, fromInclusive = true, toInclusive = true),
-                    true,
-                    userId
+                    true
                 )
             } returns Unit
             coEvery {
                 deleteTransactionById(
+                    userId,
                     range(4, 6, fromInclusive = true, toInclusive = true),
-                    false,
-                    userId
+                    false
                 )
             } returns Unit
         }
 
-        coastService = JsonService(dao, factory, transactionFactory)
-        incomeService = JsonService(dao, factory, transactionFactory)
+        val ratesObserver: RatesObserver = mockk()
+
+        coastService = JsonService(dao, factory, transactionFactory, ratesObserver)
+        incomeService = JsonService(dao, factory, transactionFactory, ratesObserver)
         incomeService.isCoast = false
     }
 
     @Test
     fun `get all coasts`() = runBlocking {
         val coastFromDao = factory.build<Coast>(listCoast[0])
-        val coasts = coastService.getAll(userId)
+        val coasts = coastService.getFromInterval(userId)
 
         assertFalse(coasts.isEmpty())
         assertEquals(3, coasts.size)
@@ -142,7 +145,7 @@ class JsonServiceTest {
     @Test
     fun `get all income`() = runBlocking {
         val incomeFromDao = factory.build<Income>(listCoast[3])
-        val incomes = incomeService.getAll(userId)
+        val incomes = incomeService.getFromInterval(userId)
 
         assertFalse(incomes.isEmpty())
         assertEquals(3, incomes.size)
@@ -171,7 +174,7 @@ class JsonServiceTest {
 
     @Test
     fun `add new coast with date`() = runBlocking {
-        val coast = Coast(null, "test", 1, date, null)
+        val coast = Coast(null, "test", 1, date, null, "EUR")
         val newCoast = coastService.add(coast, userId)
 
         assertNotNull(newCoast.id)
@@ -182,7 +185,7 @@ class JsonServiceTest {
 
     @Test
     fun `add new coast without date`() = runBlocking {
-        val coast = Coast(null, "test", 1, null, null)
+        val coast = Coast(null, "test", 1, null, null, "EUR")
         val newCoast = coastService.add(coast, userId)
 
         assertNotNull(newCoast.id)
@@ -193,7 +196,7 @@ class JsonServiceTest {
 
     @Test
     fun `add new income with date`() = runBlocking {
-        val income = Income(null, "test", 1, date)
+        val income = Income(null, "test", 1, date, "EUR")
         val newIncome = incomeService.add(income, userId)
 
         assertNotNull(newIncome.id)
@@ -204,7 +207,7 @@ class JsonServiceTest {
 
     @Test
     fun `add new income without date`() = runBlocking {
-        val income = Income(null, "test", 1, null)
+        val income = Income(null, "test", 1, null, "EUR")
         val newIncome = incomeService.add(income, userId)
 
         assertNotNull(newIncome.id)
@@ -216,7 +219,7 @@ class JsonServiceTest {
     @Test
     fun `update exist coast`() = runBlocking {
         val id = 1
-        val coast = Coast(id, "test", 1, date, null)
+        val coast = Coast(id, "test", 1, date, null, "EUR")
         val newCoast = coastService.update(id, coast, userId)
 
         assertNotNull(newCoast.id)
@@ -228,14 +231,14 @@ class JsonServiceTest {
     @Test
     fun `update non-exist coast`() {
         val id = 9
-        val coast = Coast(id, "test", 1, date, null)
+        val coast = Coast(id, "test", 1, date, null, "EUR")
         assertThrowTransactionNotFoundException { coastService.update(id, coast, userId) }
     }
 
     @Test
     fun `update exist income`() = runBlocking {
         val id = 4
-        val income = Income(id, "test", 1, date)
+        val income = Income(id, "test", 1, date, "EUR")
         val newIncome = incomeService.update(id, income, userId)
 
         assertNotNull(newIncome.id)
@@ -247,7 +250,7 @@ class JsonServiceTest {
     @Test
     fun `update non-exist income`() {
         val id = 9
-        val income = Income(id, "test", 1, date)
+        val income = Income(id, "test", 1, date, "EUR")
         assertThrowTransactionNotFoundException { incomeService.update(id, income, userId) }
     }
 
@@ -255,7 +258,7 @@ class JsonServiceTest {
     fun `delete exist coast`() = runBlocking {
         val id = 1
         coastService.deleteById(id, userId)
-        coVerify(exactly = 1) { dao.deleteTransactionById(id, true, userId) }
+        coVerify(exactly = 1) { dao.deleteTransactionById(userId, id, true) }
     }
 
     @Test
@@ -268,7 +271,7 @@ class JsonServiceTest {
     fun `delete exist income`() = runBlocking {
         val id = 4
         incomeService.deleteById(id, userId)
-        coVerify(exactly = 1) { dao.deleteTransactionById(id, false, userId) }
+        coVerify(exactly = 1) { dao.deleteTransactionById(userId, id, false) }
     }
 
     @Test

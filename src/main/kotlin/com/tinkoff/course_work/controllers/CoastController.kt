@@ -1,6 +1,6 @@
 package com.tinkoff.course_work.controllers
 
-import com.tinkoff.course_work.models.json.Coast
+import com.tinkoff.course_work.models.json.ordinary.Coast
 import com.tinkoff.course_work.services.JsonService
 import org.slf4j.LoggerFactory
 import org.springframework.format.annotation.DateTimeFormat

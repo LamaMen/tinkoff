@@ -39,7 +39,7 @@ class JsonService<T : BasicJson>(
     }
 
     suspend fun getById(id: Int, userId: String): T {
-        return entityFactory.build(dao.getTransactionById(id, isCoast, userId))
+        return entityFactory.build(dao.getTransactionById(userId, id, isCoast))
     }
 
     suspend fun getByCategory(category: String, userId: String): List<T> {
@@ -55,21 +55,21 @@ class JsonService<T : BasicJson>(
         if (!validateJson(json)) throw BadRequestException("Wrong category or currency")
 
         val transaction = transactionFactory.build(json)
-        val id = dao.addTransaction(transaction, userId)
+        val id = dao.addTransaction(userId, transaction)
         return entityFactory.build(id, transaction)
     }
 
     suspend fun update(id: Int, json: T, userId: String): T {
         if (!validateJson(json, true)) throw BadRequestException("Wrong category or currency")
 
-        val transactionFromDB = dao.getTransactionById(id, isCoast, userId)
+        val transactionFromDB = dao.getTransactionById(userId, id, isCoast)
         val savedTransaction = transactionFactory.build(json, transactionFromDB)
-        dao.updateTransaction(savedTransaction, userId)
+        dao.updateTransaction(userId, savedTransaction)
         return entityFactory.build(savedTransaction)
     }
 
     suspend fun deleteById(id: Int, userId: String) {
-        dao.deleteTransactionById(id, isCoast, userId)
+        dao.deleteTransactionById(userId, id, isCoast)
     }
 
     suspend fun getJsonByCondition(userId: String, condition: (MoneyTransaction) -> Boolean): List<T> =

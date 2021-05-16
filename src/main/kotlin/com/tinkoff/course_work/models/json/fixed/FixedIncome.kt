@@ -1,17 +1,14 @@
-package com.tinkoff.course_work.models.json
+package com.tinkoff.course_work.models.json.fixed
 
-import com.fasterxml.jackson.annotation.JsonFormat
 import com.fasterxml.jackson.annotation.JsonIgnore
-import java.time.LocalDateTime
 
-class Income(
+class FixedIncome(
     override val id: Int?,
     override val title: String,
     override val amount: Long,
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "d MMMM yyyy HH:mm")
-    override val date: LocalDateTime?,
+    override val day: Int,
     override val currency: String?
-) : BasicJson {
+) : FixedJson {
     @JsonIgnore
     override val category: String? = null
 
