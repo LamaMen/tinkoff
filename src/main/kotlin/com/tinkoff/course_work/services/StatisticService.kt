@@ -15,12 +15,12 @@ class StatisticService(
     suspend fun getBalance(currency: String?, from: Date?, to: Date?, userId: String): Map<String, Double> {
         var balance =
             incomeService.getFromInterval(userId = userId, from = from, to = to).fold(0.toDouble()) { sum, income ->
-                val amount = ratesObserver.convert(income.amount, from = income.currency!!)
+                val amount = ratesObserver.convert(income.amount, from = income.currency)
                 sum + amount
             }
 
         balance = coastService.getFromInterval(userId = userId, from = from, to = to).fold(balance) { sum, coast ->
-            val amount = ratesObserver.convert(coast.amount, from = coast.currency!!)
+            val amount = ratesObserver.convert(coast.amount, from = coast.currency)
             sum - amount
         }
 
