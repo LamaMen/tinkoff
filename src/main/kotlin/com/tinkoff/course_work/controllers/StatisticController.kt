@@ -5,10 +5,7 @@ import com.tinkoff.course_work.models.json.Income
 import com.tinkoff.course_work.services.StatisticService
 import org.slf4j.LoggerFactory
 import org.springframework.format.annotation.DateTimeFormat
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RequestParam
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 import java.security.Principal
 import java.util.*
 
@@ -61,5 +58,11 @@ class StatisticController(
         val coastsByCategories = service.groupByCategories(userId)
         logger.info("Given grouped coasts for user $userId")
         return coastsByCategories
+    }
+
+    @GetMapping("/rate/{rate_name}")
+    suspend fun getRate(@PathVariable(name = "rate_name") rateName: String): Map<String, Double> {
+        val rate = service.getRates(rateName)
+        return mapOf(rateName to rate)
     }
 }
