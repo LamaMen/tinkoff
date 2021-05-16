@@ -10,5 +10,5 @@ interface BasicJson {
     val category: String?
     val currency: String?
 
-    fun validateCategory()
+    fun validateCategory(): Boolean
 }

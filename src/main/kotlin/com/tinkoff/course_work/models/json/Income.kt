@@ -15,5 +15,5 @@ class Income(
     @JsonIgnore
     override val category: String? = null
 
-    override fun validateCategory() {}
+    override fun validateCategory(): Boolean = true
 }

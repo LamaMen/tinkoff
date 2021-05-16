@@ -18,7 +18,7 @@ class MoneyTransactionFactory {
             parentTransaction.date,
             isCoast,
             Category.valueOf(json.category),
-            parentTransaction.currency
+            json.currency!!
         )
     }
 

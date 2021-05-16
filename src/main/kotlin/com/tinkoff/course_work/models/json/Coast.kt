@@ -1,7 +1,6 @@
 package com.tinkoff.course_work.models.json
 
 import com.fasterxml.jackson.annotation.JsonFormat
-import com.tinkoff.course_work.exceptions.BadRequestException
 import com.tinkoff.course_work.models.domain.isCategory
 import java.time.LocalDateTime
 
@@ -14,9 +13,5 @@ class Coast(
     override val category: String?,
     override val currency: String?
 ) : BasicJson {
-    override fun validateCategory() {
-        if (this.category != null && !this.category.isCategory()) {
-            throw BadRequestException("No such category")
-        }
-    }
+    override fun validateCategory(): Boolean = this.category == null || this.category.isCategory()
 }

@@ -85,6 +85,7 @@ class MoneyTransactionDAO(private val database: Database) {
         it[isCoast] = transaction.isCoast
         it[user] = UUID.fromString(userId)
         it[category] = transaction.categoryId()
+        it[currency] = transaction.currency
     }
 
     suspend fun <T> dbQuery(statement: Transaction.() -> T): T = withContext(Dispatchers.IO) {

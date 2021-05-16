@@ -27,6 +27,11 @@ class RatesObserver(private val webClient: WebClient) {
         return rates!!.rates[currency] ?: throw NoSuchCurrencyException("No $currency currency")
     }
 
+    suspend fun checkCurrency(currency: String): Boolean {
+        if (rates == null) updateRates()
+        return rates!!.rates.containsKey(currency)
+    }
+
     private fun isNeedUpdate(): Boolean {
         if (rates == null || lastUpdateTime == null) return true
 
