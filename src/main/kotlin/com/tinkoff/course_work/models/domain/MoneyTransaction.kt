@@ -2,12 +2,16 @@ package com.tinkoff.course_work.models.domain
 
 import java.time.LocalDateTime
 
-data class MoneyTransaction(
-    val id: Int?,
-    val title: String,
-    val amount: Long,
+class MoneyTransaction(
+    override val id: Int?,
+    override val title: String,
+    override val amount: Long,
     val date: LocalDateTime,
-    val isCoast: Boolean,
-    val category: Category,
-    val currency: String
-)
+    override val isCoast: Boolean,
+    override val category: Category,
+    override val currency: String
+) : Transaction {
+    override fun checkInterval(begin: LocalDateTime, end: LocalDateTime): Boolean {
+        return date.isAfter(begin) && date.isBefore(end)
+    }
+}

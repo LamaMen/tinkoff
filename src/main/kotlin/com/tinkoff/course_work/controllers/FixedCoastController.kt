@@ -1,15 +1,9 @@
 package com.tinkoff.course_work.controllers
 
-import com.tinkoff.course_work.models.json.fixed.FixedCoast
-import com.tinkoff.course_work.services.JsonService
-import org.slf4j.LoggerFactory
-import org.springframework.web.bind.annotation.RequestMapping
-import org.springframework.web.bind.annotation.RestController
-
-@RestController
-@RequestMapping("/fixed_coast")
-class FixedCoastController(private val fixedCoastService: JsonService<FixedCoast>) {
-    private val logger = LoggerFactory.getLogger(FixedCoastController::class.java)
+//@RestController
+//@RequestMapping("/fixed_coast")
+//class FixedCoastController(private val fixedCoastService: JsonService<FixedCoast>) {
+//    private val logger = LoggerFactory.getLogger(FixedCoastController::class.java)
 
 //    @GetMapping
 //    suspend fun getAllCoasts(
@@ -64,4 +58,4 @@ class FixedCoastController(private val fixedCoastService: JsonService<FixedCoast
 //        fixedCoastService.deleteById(id, userId)
 //        logger.info("Fixed coast with ID=$id deleted for user $userId")
 //    }
-}
+//}

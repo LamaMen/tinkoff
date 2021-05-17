@@ -3,6 +3,7 @@ package com.tinkoff.course_work.dao
 
 import com.tinkoff.course_work.models.domain.BaseTransaction
 import com.tinkoff.course_work.models.domain.MoneyTransaction
+import com.tinkoff.course_work.models.domain.Transaction
 import org.springframework.stereotype.Repository
 import java.time.LocalDateTime
 
@@ -12,13 +13,13 @@ class OrdinaryTransactionDAO(
     private val dates: OrdinaryDAO
 ) : MoneyTransactionDAO {
 
-    override suspend fun getTransactionById(userId: String, id: Int?, isCoast: Boolean): MoneyTransaction {
+    override suspend fun getTransactionById(userId: String, id: Int?, isCoast: Boolean): Transaction {
         val base = transactions.getTransactionById(userId, id, isCoast)
         val date = dates.getDateByTransactionId(id)
         return extractMoneyTransaction(base, date)
     }
 
-    override suspend fun getAllTransactionsByUser(userId: String): List<MoneyTransaction> {
+    override suspend fun getAllTransactionsByUser(userId: String): List<Transaction> {
         val base = transactions.getAllTransactionsByUser(userId)
         return base.map {
             val date = dates.getDateByTransactionId(it.id)
@@ -26,13 +27,14 @@ class OrdinaryTransactionDAO(
         }
     }
 
-    override suspend fun addTransaction(userId: String, transaction: MoneyTransaction): Int {
+    override suspend fun addTransaction(userId: String, transaction: Transaction): Int {
+        transaction as MoneyTransaction
         val id = transactions.addTransaction(userId, extractBaseTransaction(transaction))
         dates.saveDate(id to transaction.date)
         return id
     }
 
-    override suspend fun updateTransaction(userId: String, transaction: MoneyTransaction) {
+    override suspend fun updateTransaction(userId: String, transaction: Transaction) {
         transactions.updateTransaction(userId, extractBaseTransaction(transaction))
     }
 
@@ -41,7 +43,7 @@ class OrdinaryTransactionDAO(
         dates.deleteTransactionById(id)
     }
 
-    private fun extractMoneyTransaction(transaction: BaseTransaction, date: LocalDateTime): MoneyTransaction {
+    private fun extractMoneyTransaction(transaction: BaseTransaction, date: LocalDateTime): Transaction {
         return MoneyTransaction(
             transaction.id,
             transaction.title,
@@ -53,7 +55,7 @@ class OrdinaryTransactionDAO(
         )
     }
 
-    private fun extractBaseTransaction(transaction: MoneyTransaction): BaseTransaction {
+    private fun extractBaseTransaction(transaction: Transaction): BaseTransaction {
         return BaseTransaction(
             transaction.id,
             transaction.title,

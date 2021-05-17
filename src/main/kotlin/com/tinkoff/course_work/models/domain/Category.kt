@@ -28,7 +28,7 @@ enum class Category {
 
 fun BaseTransaction.categoryId() = this.category.ordinal
 
-fun MoneyTransaction.categoryName() = this.category.name
+fun Transaction.categoryName() = this.category.name
 
 fun String?.isCategory() = this != null && this in Category.values().map(Category::name)
 

@@ -3,7 +3,7 @@ package com.tinkoff.course_work.services
 import com.tinkoff.course_work.dao.MoneyTransactionDAO
 import com.tinkoff.course_work.exceptions.BadRequestException
 import com.tinkoff.course_work.integration.RatesObserver
-import com.tinkoff.course_work.models.domain.MoneyTransaction
+import com.tinkoff.course_work.models.domain.Transaction
 import com.tinkoff.course_work.models.domain.categoryName
 import com.tinkoff.course_work.models.domain.validate
 import com.tinkoff.course_work.models.factory.BasicJsonFactory
@@ -11,14 +11,11 @@ import com.tinkoff.course_work.models.factory.MoneyTransactionFactory
 import com.tinkoff.course_work.models.json.BasicJson
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
-import org.springframework.context.annotation.Scope
-import org.springframework.stereotype.Service
 import java.time.LocalDateTime
 import java.util.*
 import kotlin.coroutines.*
 
-@Service
-@Scope("prototype")
+
 class JsonService<T : BasicJson>(
     private val dao: MoneyTransactionDAO,
     private val entityFactory: BasicJsonFactory,
@@ -32,9 +29,7 @@ class JsonService<T : BasicJson>(
         val end = to?.toLocalDateTime() ?: if (!isAll) LocalDateTime.now() else LocalDateTime.MAX
 
         return getJsonByCondition(userId) { transaction ->
-            transaction.isCoast == isCoast
-                    && transaction.date.isAfter(begin)
-                    && transaction.date.isBefore(end)
+            transaction.isCoast == isCoast && transaction.checkInterval(begin, end)
         }
     }
 
@@ -72,7 +67,7 @@ class JsonService<T : BasicJson>(
         dao.deleteTransactionById(userId, id, isCoast)
     }
 
-    suspend fun getJsonByCondition(userId: String, condition: (MoneyTransaction) -> Boolean): List<T> =
+    suspend fun getJsonByCondition(userId: String, condition: (Transaction) -> Boolean): List<T> =
         dao.getAllTransactionsByUser(userId)
             .filter(condition)
             .map(entityFactory::build)
