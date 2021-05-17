@@ -2,3 +2,4 @@
 /.gradle/
 /build/
 /.idea/
+src/test/kotlin/com/tinkoff/course_work/services/JsonServiceTest.kt

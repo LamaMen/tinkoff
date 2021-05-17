@@ -1,14 +1,15 @@
 package com.tinkoff.course_work.services
 
-import com.tinkoff.course_work.dao.OrdinaryMoneyTransactionDAO
+import com.tinkoff.course_work.dao.MoneyTransactionDAO
 import com.tinkoff.course_work.exceptions.TransactionNotFoundException
 import com.tinkoff.course_work.integration.RatesObserver
-import com.tinkoff.course_work.models.domain.BaseTransaction
 import com.tinkoff.course_work.models.domain.Category
+import com.tinkoff.course_work.models.domain.MoneyTransaction
 import com.tinkoff.course_work.models.factory.BasicJsonFactory
 import com.tinkoff.course_work.models.factory.MoneyTransactionFactory
 import com.tinkoff.course_work.models.json.ordinary.Coast
 import com.tinkoff.course_work.models.json.ordinary.Income
+import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
 import kotlinx.coroutines.CoroutineScope
@@ -21,7 +22,7 @@ import java.time.LocalDateTime
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class JsonServiceTest {
-    private lateinit var dao: OrdinaryMoneyTransactionDAO
+    private lateinit var dao: MoneyTransactionDAO
     private lateinit var factory: BasicJsonFactory
     private lateinit var transactionFactory: MoneyTransactionFactory
     private lateinit var coastService: JsonService<Coast>
@@ -30,12 +31,12 @@ class JsonServiceTest {
     private val userId = "1"
     private val date = LocalDateTime.now()
     private val listCoast = mutableListOf(
-        BaseTransaction(1, "", 1, date, true, Category.Other, "EUR"),
-        BaseTransaction(2, "", 1, date, true, Category.Other, "EUR"),
-        BaseTransaction(3, "", 1, date, true, Category.Other, "EUR"),
-        BaseTransaction(4, "", 1, date, false, Category.Other, "EUR"),
-        BaseTransaction(5, "", 1, date, false, Category.Other, "EUR"),
-        BaseTransaction(6, "", 1, date, false, Category.Other, "EUR"),
+        MoneyTransaction(1, "", 1, date, true, Category.Other, "EUR"),
+        MoneyTransaction(2, "", 1, date, true, Category.Other, "EUR"),
+        MoneyTransaction(3, "", 1, date, true, Category.Other, "EUR"),
+        MoneyTransaction(4, "", 1, date, false, Category.Other, "EUR"),
+        MoneyTransaction(5, "", 1, date, false, Category.Other, "EUR"),
+        MoneyTransaction(6, "", 1, date, false, Category.Other, "EUR"),
     )
 
     @BeforeAll

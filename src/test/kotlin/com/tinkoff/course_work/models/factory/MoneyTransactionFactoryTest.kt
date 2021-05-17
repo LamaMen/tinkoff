@@ -1,7 +1,7 @@
 package com.tinkoff.course_work.models.factory
 
-import com.tinkoff.course_work.models.domain.BaseTransaction
 import com.tinkoff.course_work.models.domain.Category
+import com.tinkoff.course_work.models.domain.MoneyTransaction
 import com.tinkoff.course_work.models.json.ordinary.Coast
 import com.tinkoff.course_work.models.json.ordinary.Income
 import org.junit.jupiter.api.Assertions.*
@@ -14,28 +14,26 @@ class MoneyTransactionFactoryTest {
     @Test
     fun `build transaction by parent transaction and coast without id`() {
         val coast = Coast(null, "coast", 1, null, null, "EUR")
-        val parentTransaction = BaseTransaction(1, "transaction", 10, LocalDateTime.now(), true, Category.Other, "EUR")
+        val parentTransaction = MoneyTransaction(1, "transaction", 10, LocalDateTime.now(), true, Category.Other, "EUR")
 
         val transaction = factory.build(coast, parentTransaction)
 
         assertEquals(coast.title, transaction.title)
         assertEquals(coast.amount, transaction.amount)
         assertEquals(parentTransaction.id, transaction.id)
-        assertEquals(parentTransaction.date, transaction.date)
         assertTrue(transaction.isCoast)
     }
 
     @Test
     fun `build transaction by parent transaction and coast with id`() {
         val coast = Coast(2, "coast", 1, null, null, "EUR")
-        val parentTransaction = BaseTransaction(1, "transaction", 10, LocalDateTime.now(), true, Category.Other, "EUR")
+        val parentTransaction = MoneyTransaction(1, "transaction", 10, LocalDateTime.now(), true, Category.Other, "EUR")
 
         val transaction = factory.build(coast, parentTransaction)
 
         assertEquals(coast.title, transaction.title)
         assertEquals(coast.amount, transaction.amount)
         assertEquals(parentTransaction.id, transaction.id)
-        assertEquals(parentTransaction.date, transaction.date)
         assertTrue(transaction.isCoast)
     }
 
@@ -44,14 +42,13 @@ class MoneyTransactionFactoryTest {
     fun `build transaction by parent transaction and income without id`() {
         val income = Income(null, "income", 1, null, "EUR")
         val parentTransaction =
-            BaseTransaction(1, "transaction", 10, LocalDateTime.now(), false, Category.Other, "EUR")
+            MoneyTransaction(1, "transaction", 10, LocalDateTime.now(), false, Category.Other, "EUR")
 
         val transaction = factory.build(income, parentTransaction)
 
         assertEquals(income.title, transaction.title)
         assertEquals(income.amount, transaction.amount)
         assertEquals(parentTransaction.id, transaction.id)
-        assertEquals(parentTransaction.date, transaction.date)
         assertFalse(transaction.isCoast)
     }
 
@@ -59,14 +56,13 @@ class MoneyTransactionFactoryTest {
     fun `build transaction by parent transaction and income with id`() {
         val income = Income(2, "income", 1, null, "EUR")
         val parentTransaction =
-            BaseTransaction(1, "transaction", 10, LocalDateTime.now(), false, Category.Other, "EUR")
+            MoneyTransaction(1, "transaction", 10, LocalDateTime.now(), false, Category.Other, "EUR")
 
         val transaction = factory.build(income, parentTransaction)
 
         assertEquals(income.title, transaction.title)
         assertEquals(income.amount, transaction.amount)
         assertEquals(parentTransaction.id, transaction.id)
-        assertEquals(parentTransaction.date, transaction.date)
         assertFalse(transaction.isCoast)
     }
 
@@ -78,7 +74,6 @@ class MoneyTransactionFactoryTest {
         assertNull(transaction.id)
         assertEquals(coast.title, transaction.title)
         assertEquals(coast.amount, transaction.amount)
-        assertEquals(coast.date, transaction.date)
         assertTrue(transaction.isCoast)
     }
 
@@ -91,7 +86,6 @@ class MoneyTransactionFactoryTest {
         assertEquals(coast.id, transaction.id)
         assertEquals(coast.title, transaction.title)
         assertEquals(coast.amount, transaction.amount)
-        assertEquals(coast.date, transaction.date)
         assertTrue(transaction.isCoast)
     }
 
@@ -103,7 +97,6 @@ class MoneyTransactionFactoryTest {
         assertNull(transaction.id)
         assertEquals(income.title, transaction.title)
         assertEquals(income.amount, transaction.amount)
-        assertEquals(income.date, transaction.date)
         assertFalse(transaction.isCoast)
     }
 
@@ -116,7 +109,6 @@ class MoneyTransactionFactoryTest {
         assertEquals(income.id, transaction.id)
         assertEquals(income.title, transaction.title)
         assertEquals(income.amount, transaction.amount)
-        assertEquals(income.date, transaction.date)
         assertFalse(transaction.isCoast)
     }
 
@@ -128,7 +120,6 @@ class MoneyTransactionFactoryTest {
         assertNull(transaction.id)
         assertEquals(coast.title, transaction.title)
         assertEquals(coast.amount, transaction.amount)
-        assertEquals(coast.date, transaction.date)
         assertTrue(transaction.isCoast)
     }
 
@@ -141,7 +132,6 @@ class MoneyTransactionFactoryTest {
         assertEquals(1, transaction.id)
         assertEquals(coast.title, transaction.title)
         assertEquals(coast.amount, transaction.amount)
-        assertEquals(coast.date, transaction.date)
         assertTrue(transaction.isCoast)
     }
 
@@ -153,7 +143,6 @@ class MoneyTransactionFactoryTest {
         assertNull(transaction.id)
         assertEquals(income.title, transaction.title)
         assertEquals(income.amount, transaction.amount)
-        assertEquals(income.date, transaction.date)
         assertFalse(transaction.isCoast)
     }
 
@@ -166,7 +155,6 @@ class MoneyTransactionFactoryTest {
         assertEquals(1, transaction.id)
         assertEquals(income.title, transaction.title)
         assertEquals(income.amount, transaction.amount)
-        assertEquals(income.date, transaction.date)
         assertFalse(transaction.isCoast)
     }
 }
