@@ -15,7 +15,7 @@ import java.time.LocalDateTime
 @Component
 class MoneyTransactionFactory {
     fun build(json: BasicJson, parentTransaction: Transaction): Transaction {
-        val isCoast = json is Coast
+        val isCoast = json is Coast || json is FixedCoast
         return when (parentTransaction) {
             is MoneyTransaction -> {
                 MoneyTransaction(

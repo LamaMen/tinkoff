@@ -1,5 +1,6 @@
 package com.tinkoff.course_work.dao
 
+import com.tinkoff.course_work.exceptions.TransactionNotFoundException
 import com.tinkoff.course_work.models.domain.BaseTransaction
 import com.tinkoff.course_work.models.domain.FixedTransaction
 import com.tinkoff.course_work.models.domain.Transaction
@@ -12,9 +13,9 @@ class FixedTransactionDAO(
 ) : MoneyTransactionDAO {
 
     override suspend fun getTransactionById(userId: String, id: Int?, isCoast: Boolean): Transaction {
+        val day = days.getDayByTransactionId(id) ?: throw TransactionNotFoundException(id)
         val base = transactions.getTransactionById(userId, id, isCoast)
-        val day = days.getDayByTransactionId(id)
-        return extractFixedTransaction(base, day!!)
+        return extractFixedTransaction(base, day)
     }
 
     override suspend fun getAllTransactionsByUser(userId: String): List<Transaction> {
@@ -34,6 +35,7 @@ class FixedTransactionDAO(
     }
 
     override suspend fun deleteTransactionById(userId: String, id: Int, isCoast: Boolean) {
+        transactions.getTransactionById(userId, id, isCoast)
         days.deleteTransactionById(id)
         transactions.deleteTransactionById(userId, id, isCoast)
     }

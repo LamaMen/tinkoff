@@ -15,8 +15,8 @@ class OrdinaryTransactionDAO(
 ) : MoneyTransactionDAO {
 
     override suspend fun getTransactionById(userId: String, id: Int?, isCoast: Boolean): Transaction {
-        val base = transactions.getTransactionById(userId, id, isCoast)
         val date = dates.getDateByTransactionId(id) ?: throw TransactionNotFoundException(id)
+        val base = transactions.getTransactionById(userId, id, isCoast)
         return extractMoneyTransaction(base, date)
     }
 
@@ -33,10 +33,12 @@ class OrdinaryTransactionDAO(
     }
 
     override suspend fun updateTransaction(userId: String, transaction: Transaction) {
+        if (dates.getDateByTransactionId(transaction.id) == null) throw TransactionNotFoundException(transaction.id)
         transactions.updateTransaction(userId, BaseTransaction(transaction))
     }
 
     override suspend fun deleteTransactionById(userId: String, id: Int, isCoast: Boolean) {
+        transactions.getTransactionById(userId, id, isCoast)
         dates.deleteTransactionById(id)
         transactions.deleteTransactionById(userId, id, isCoast)
     }

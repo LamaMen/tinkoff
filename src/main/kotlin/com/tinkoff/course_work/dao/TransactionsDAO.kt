@@ -43,17 +43,6 @@ class TransactionsDAO(private val database: Database) {
 
     suspend fun updateTransaction(userId: String, transaction: BaseTransaction) {
         dbQuery {
-            TransactionsTable
-                .select {
-                    if (transaction.id == null) throw TransactionNotFoundException(transaction.id)
-
-                    return@select TransactionsTable.id eq transaction.id and
-                            (TransactionsTable.user eq UUID.fromString(userId)) and
-                            (TransactionsTable.isCoast eq transaction.isCoast)
-                }
-                .map(::extractTransaction)
-                .firstOrNull() ?: throw TransactionNotFoundException(transaction.id)
-
             TransactionsTable.update({
                 if (transaction.id == null) throw TransactionNotFoundException(transaction.id)
 
