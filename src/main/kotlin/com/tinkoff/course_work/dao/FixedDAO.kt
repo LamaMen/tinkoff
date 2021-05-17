@@ -1,7 +1,6 @@
 package com.tinkoff.course_work.dao
 
 import com.tinkoff.course_work.database.FixedTable
-import com.tinkoff.course_work.database.OrdinaryTransactionTable
 import com.tinkoff.course_work.exceptions.TransactionNotFoundException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -12,12 +11,12 @@ import org.springframework.stereotype.Repository
 
 @Repository
 class FixedDAO(private val database: Database) {
-    suspend fun getDayByTransactionId(id: Int?): Int {
+    suspend fun getDayByTransactionId(id: Int?): Int? {
         return dbQuery {
             FixedTable
-                .select { OrdinaryTransactionTable.id eq id }
+                .select { FixedTable.id eq id }
                 .map(::extractDay)
-                .firstOrNull()?.second ?: throw TransactionNotFoundException(id)
+                .firstOrNull()?.second
         }
     }
 

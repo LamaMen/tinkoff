@@ -12,12 +12,12 @@ import java.time.LocalDateTime
 
 @Repository
 class OrdinaryDAO(private val database: Database) {
-    suspend fun getDateByTransactionId(id: Int?): LocalDateTime {
+    suspend fun getDateByTransactionId(id: Int?): LocalDateTime? {
         return dbQuery {
             OrdinaryTransactionTable
                 .select { OrdinaryTransactionTable.id eq id }
                 .map(::extractDate)
-                .firstOrNull()?.second ?: throw TransactionNotFoundException(id)
+                .firstOrNull()?.second
         }
     }
 

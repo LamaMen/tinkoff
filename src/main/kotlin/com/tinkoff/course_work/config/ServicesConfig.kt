@@ -4,6 +4,8 @@ import com.tinkoff.course_work.dao.MoneyTransactionDAO
 import com.tinkoff.course_work.integration.RatesObserver
 import com.tinkoff.course_work.models.factory.BasicJsonFactory
 import com.tinkoff.course_work.models.factory.MoneyTransactionFactory
+import com.tinkoff.course_work.models.json.fixed.FixedCoast
+import com.tinkoff.course_work.models.json.fixed.FixedIncome
 import com.tinkoff.course_work.models.json.ordinary.Coast
 import com.tinkoff.course_work.models.json.ordinary.Income
 import com.tinkoff.course_work.services.JsonService
@@ -22,12 +24,10 @@ class ServicesConfig(
         return JsonService(dao, entityFactory, transactionFactory, ratesObserver)
     }
 
-//    @Bean
-//    fun fixedCoastService(): JsonService<FixedCoast> {
-//        val service = JsonService<FixedCoast>(dao, entityFactory, transactionFactory, ratesObserver)
-//        service.isFixed = true
-//        return service
-//    }
+    @Bean
+    fun fixedCoastService(@Qualifier("fixed") dao: MoneyTransactionDAO): JsonService<FixedCoast> {
+        return JsonService(dao, entityFactory, transactionFactory, ratesObserver)
+    }
 
     @Bean
     fun incomeService(@Qualifier("ordinary") dao: MoneyTransactionDAO): JsonService<Income> {
@@ -36,11 +36,10 @@ class ServicesConfig(
         return service
     }
 
-//    @Bean
-//    fun fixedIncomeService(): JsonService<FixedIncome> {
-//        val service = JsonService<FixedIncome>(dao, entityFactory, transactionFactory, ratesObserver)
-//        service.isCoast = false
-//        service.isFixed = true
-//        return service
-//    }
+    @Bean
+    fun fixedIncomeService(@Qualifier("fixed") dao: MoneyTransactionDAO): JsonService<FixedIncome> {
+        val service = JsonService<FixedIncome>(dao, entityFactory, transactionFactory, ratesObserver)
+        service.isCoast = false
+        return service
+    }
 }
