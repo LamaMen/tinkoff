@@ -1,10 +1,27 @@
+val coroutinesVersion: String by System.getProperties()
+
+val postgresVersion: String by System.getProperties()
+val flywayVersion: String by System.getProperties()
+val exposedVersion: String by System.getProperties()
+
+val jwtVersion: String by System.getProperties()
+
+val junitVersion: String by System.getProperties()
+val mokkVersion: String by System.getProperties()
+
 plugins {
-    id("org.springframework.boot") version "2.4.4"
-    id("io.spring.dependency-management") version "1.0.11.RELEASE"
-    kotlin("jvm") version "1.4.31"
-    kotlin("plugin.spring") version "1.4.31"
-    id("org.flywaydb.flyway") version "7.8.1"
-    id("org.jetbrains.kotlin.plugin.jpa") version "1.5.0-M2"
+    val springBootVersion: String by System.getProperties()
+    val springDependencyManagementVersion: String by System.getProperties()
+    val kotlinVersion: String by System.getProperties()
+    val flywayVersion: String by System.getProperties()
+    val jpaKotlinPluginVersion: String by System.getProperties()
+
+    id("org.springframework.boot") version springBootVersion
+    id("io.spring.dependency-management") version springDependencyManagementVersion
+    kotlin("jvm") version kotlinVersion
+    kotlin("plugin.spring") version kotlinVersion
+    id("org.flywaydb.flyway") version flywayVersion
+    id("org.jetbrains.kotlin.plugin.jpa") version jpaKotlinPluginVersion
 }
 
 group = "org.example"
@@ -14,7 +31,6 @@ repositories {
     mavenCentral()
 }
 
-val exposedVersion: String by project
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-webflux")
@@ -24,25 +40,25 @@ dependencies {
     testImplementation("org.springframework.boot:spring-boot-starter-test")
 
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
-    implementation("io.jsonwebtoken:jjwt-api:0.11.1")
-    runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.1")
-    runtimeOnly("io.jsonwebtoken:jjwt-jackson:0.11.1")
+    implementation("io.jsonwebtoken:jjwt-api:$jwtVersion")
+    runtimeOnly("io.jsonwebtoken:jjwt-impl:$jwtVersion")
+    runtimeOnly("io.jsonwebtoken:jjwt-jackson:$jwtVersion")
 
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.3")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.4.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:$coroutinesVersion")
 
-    implementation("org.postgresql:postgresql:42.2.19")
-    implementation("org.flywaydb:flyway-core:7.8.1")
+    implementation("org.postgresql:postgresql:$postgresVersion")
+    implementation("org.flywaydb:flyway-core:$flywayVersion")
     implementation("org.jetbrains.exposed:exposed-core:$exposedVersion")
     implementation("org.jetbrains.exposed:exposed-jdbc:$exposedVersion")
     implementation("org.jetbrains.exposed:exposed-java-time:$exposedVersion")
 
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.2.0")
-    testImplementation("org.junit.jupiter:junit-jupiter-engine:5.2.0")
-    testImplementation("org.junit.jupiter:junit-jupiter-params:5.2.0")
-    testImplementation("io.mockk:mockk:1.10.6")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
+    testImplementation("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
+    testImplementation("org.junit.jupiter:junit-jupiter-params:$junitVersion")
+    testImplementation("io.mockk:mockk:$mokkVersion")
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
