@@ -1,5 +1,6 @@
 package com.tinkoff.course_work.controllers
 
+import com.tinkoff.course_work.models.json.StatisticJson
 import com.tinkoff.course_work.models.json.ordinary.Coast
 import com.tinkoff.course_work.services.StatisticService
 import org.slf4j.LoggerFactory
@@ -17,7 +18,7 @@ class StatisticController(
     suspend fun full(
         principal: Principal,
         @RequestParam(name = "currency", required = false) currency: String?,
-    ): Map<String, Any> {
+    ): StatisticJson {
         val userId = principal.name
         val full = service.getFull(userId, currency)
         logger.info("Given full statistic for user $userId")

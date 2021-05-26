@@ -2,6 +2,7 @@ package com.tinkoff.course_work.services
 
 import com.tinkoff.course_work.integration.RatesObserver
 import com.tinkoff.course_work.models.json.BasicJson
+import com.tinkoff.course_work.models.json.StatisticJson
 import com.tinkoff.course_work.models.json.fixed.FixedCoast
 import com.tinkoff.course_work.models.json.fixed.FixedIncome
 import com.tinkoff.course_work.models.json.fixed.FixedJson
@@ -24,27 +25,24 @@ class StatisticService(
     private val fixedCoastService: JsonService<FixedCoast>,
     private val ratesObserver: RatesObserver
 ) {
-    suspend fun getFull(userId: String, currency: String?): Map<String, Any> {
+    suspend fun getFull(userId: String, currency: String?): StatisticJson {
         val data = getData(userId)
         val date = LocalDateTime.now()
         val remainder = calculateRemainder(data)
         val amountFixedIncome = calculateBalance(data["fixedIncomes"]!!, 0.0)
         val amountFixedCoast = calculateBalance(data["fixedCoasts"]!!, 0.0)
 
-        val statistic = mutableMapOf<String, Any>()
-        statistic["День"] = date.dayOfMonth
-        statistic["Месяц"] = date.month
-        statistic["Год"] = date.year
-        statistic["Сумма фикисрованных дохдов в месяц"] = round(amountFixedIncome)
-        statistic["Сумма фикисрованных расходов в месяц"] = round(abs(amountFixedCoast))
-        statistic["Сумма переменных дохдов до сегодняшнего дня"] = round(calculateBalance(data["incomes"]!!, 0.0))
-        statistic["Сумма переменных расходов до сегодняшнего дня"] = round(abs(calculateBalance(data["coasts"]!!, 0.0)))
-        statistic["Остаток"] = remainder
-        statistic["Планируемый бюджет на день"] = calculateDayBalance(amountFixedCoast + amountFixedIncome, 0)
-        statistic["Фактический бюдежт на день до конца месяца"] = calculateDayBalance(remainder, date.dayOfMonth)
-        statistic["Валюта"] = getPlanedDayBalance(userId, currency).entries.first().key
-
-        return statistic
+        return StatisticJson(
+            date.toLocalDate(),
+            round(amountFixedIncome),
+            round(abs(amountFixedCoast)),
+            round(calculateBalance(data["incomes"]!!, 0.0)),
+            round(abs(calculateBalance(data["coasts"]!!, 0.0))),
+            remainder,
+            calculateDayBalance(amountFixedCoast + amountFixedIncome, 0),
+            calculateDayBalance(remainder, date.dayOfMonth),
+            getPlanedDayBalance(userId, currency).entries.first().key
+        )
     }
 
     suspend fun groupByCategories(userId: String): Map<String, List<Coast>> {
